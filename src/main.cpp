@@ -25,11 +25,18 @@ int main(int argc, char** argv) {
     }
   }
 
+  Cube cube;
+
+  std::cout << cube << std::endl << std::endl;
+
   std::cout << "Movements: ";
   for (const auto& movement : movements) {
     std::cout << movement << " ";
+	cube.rotate(movement);
   }
-  std::cout << std::endl;
+  std::cout << std::endl << std::endl;
+
+  std::cout << cube << std::endl;
 
   return (EXIT_SUCCESS);
 }

@@ -4,9 +4,9 @@
 #include <vector>
 
 enum MoveType {
-  CLOCK_WISE,
-  ANTI_CLOCK_WISE,
-  TWICE,
+  CLOCK_WISE = 1,
+  TWICE = 2,
+  ANTI_CLOCK_WISE = 3,
 };
 
 enum Move {
