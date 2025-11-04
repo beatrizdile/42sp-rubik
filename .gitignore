@@ -1,0 +1,5 @@
+obj/
+tests/catch_amalgamated.*
+rubik
+run_tests
+.vscode/
