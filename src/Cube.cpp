@@ -68,6 +68,16 @@ void Cube::rotate(Movement movement) {
 }
 
 void Cube::rotate_front() {
+  corners[URF].ori = static_cast<CornerOrientation>((static_cast<int>(corners[URF].ori) + 2) % 3);
+  corners[UFL].ori = static_cast<CornerOrientation>((static_cast<int>(corners[UFL].ori) + 1) % 3);
+  corners[DLF].ori = static_cast<CornerOrientation>((static_cast<int>(corners[DLF].ori) + 2) % 3);
+  corners[DFR].ori = static_cast<CornerOrientation>((static_cast<int>(corners[DFR].ori) + 1) % 3);
+
+  edges[FR].ori = static_cast<EdgeOrientation>((static_cast<int>(edges[FR].ori) + 1) % 2);
+  edges[UF].ori = static_cast<EdgeOrientation>((static_cast<int>(edges[UF].ori) + 1) % 2);
+  edges[FL].ori = static_cast<EdgeOrientation>((static_cast<int>(edges[FL].ori) + 1) % 2);
+  edges[DF].ori = static_cast<EdgeOrientation>((static_cast<int>(edges[DF].ori) + 1) % 2);
+
   CornerData corner_temp = corners[URF];
   corners[URF] = corners[UFL];
   corners[UFL] = corners[DLF];
@@ -82,6 +92,16 @@ void Cube::rotate_front() {
 }
 
 void Cube::rotate_back() {
+  corners[DRB].ori = static_cast<CornerOrientation>((static_cast<int>(corners[DRB].ori) + 2) % 3);
+  corners[DBL].ori = static_cast<CornerOrientation>((static_cast<int>(corners[DBL].ori) + 1) % 3);
+  corners[ULB].ori = static_cast<CornerOrientation>((static_cast<int>(corners[ULB].ori) + 2) % 3);
+  corners[UBR].ori = static_cast<CornerOrientation>((static_cast<int>(corners[UBR].ori) + 1) % 3);
+
+  edges[BR].ori = static_cast<EdgeOrientation>((static_cast<int>(edges[BR].ori) + 1) % 2);
+  edges[DB].ori = static_cast<EdgeOrientation>((static_cast<int>(edges[DB].ori) + 1) % 2);
+  edges[BL].ori = static_cast<EdgeOrientation>((static_cast<int>(edges[BL].ori) + 1) % 2);
+  edges[UB].ori = static_cast<EdgeOrientation>((static_cast<int>(edges[UB].ori) + 1) % 2);
+
   CornerData corner_temp = corners[DRB];
   corners[DRB] = corners[DBL];
   corners[DBL] = corners[ULB];
@@ -124,6 +144,11 @@ void Cube::rotate_down() {
 }
 
 void Cube::rotate_left() {
+  corners[UFL].ori = static_cast<CornerOrientation>((static_cast<int>(corners[UFL].ori) + 2) % 3);
+  corners[DLF].ori = static_cast<CornerOrientation>((static_cast<int>(corners[DLF].ori) + 1) % 3);
+  corners[DBL].ori = static_cast<CornerOrientation>((static_cast<int>(corners[DBL].ori) + 2) % 3);
+  corners[ULB].ori = static_cast<CornerOrientation>((static_cast<int>(corners[ULB].ori) + 1) % 3);
+
   CornerData corner_temp = corners[UFL];
   corners[UFL] = corners[ULB];
   corners[ULB] = corners[DBL];
@@ -138,6 +163,11 @@ void Cube::rotate_left() {
 }
 
 void Cube::rotate_right() {
+  corners[UBR].ori = static_cast<CornerOrientation>((static_cast<int>(corners[UBR].ori) + 2) % 3);
+  corners[URF].ori = static_cast<CornerOrientation>((static_cast<int>(corners[URF].ori) + 1) % 3);
+  corners[DFR].ori = static_cast<CornerOrientation>((static_cast<int>(corners[DFR].ori) + 2) % 3);
+  corners[DRB].ori = static_cast<CornerOrientation>((static_cast<int>(corners[DRB].ori) + 1) % 3);
+
   CornerData corner_temp = corners[UBR];
   corners[UBR] = corners[URF];
   corners[URF] = corners[DFR];
