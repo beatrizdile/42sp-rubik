@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <vector>
+#include <sstream>
 
 enum MoveType {
   CLOCK_WISE = 1,
@@ -31,3 +32,5 @@ class Movement {
   Movement& operator=(Movement const& other);
   friend std::ostream& operator<<(std::ostream& os, const Movement& movement);
 };
+
+std::vector<Movement> parseMovements(const std::string& input);

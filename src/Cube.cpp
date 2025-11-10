@@ -1,28 +1,28 @@
 #include "Cube.hpp"
 
 Cube::Cube() : corners{{
-                   CornerData(URF),  // 0 esse -> 3
-                   CornerData(UFL),  // 1
-                   CornerData(ULB),  // 2
-                   CornerData(UBR),  // 3 esse -> 7
-                   CornerData(DFR),  // 4 esse -> 3
-                   CornerData(DLF),  // 5
-                   CornerData(DBL),  // 6
-                   CornerData(DRB),  // 7 esse -> 4
+                   CornerData(URF),
+                   CornerData(UFL),
+                   CornerData(ULB),
+                   CornerData(UBR),
+                   CornerData(DFR),
+                   CornerData(DLF),
+                   CornerData(DBL),
+                   CornerData(DRB),
                }},
                edges{{
-                   EdgeData(UR),  // 0 esse -> 11
-                   EdgeData(UF),  // 1
-                   EdgeData(UL),  // 2
-                   EdgeData(UB),  // 3
-                   EdgeData(DR),  // 4 esse -> 8
-                   EdgeData(DF),  // 5
-                   EdgeData(DL),  // 6
-                   EdgeData(DB),  // 7
-                   EdgeData(FR),  // 8 esse -> 0
-                   EdgeData(FL),  // 9
-                   EdgeData(BL),  // 10
-                   EdgeData(BR),  // 11 esse -> 4
+                   EdgeData(UR),
+                   EdgeData(UF),
+                   EdgeData(UL),
+                   EdgeData(UB),
+                   EdgeData(DR),
+                   EdgeData(DF),
+                   EdgeData(DL),
+                   EdgeData(DB),
+                   EdgeData(FR),
+                   EdgeData(FL),
+                   EdgeData(BL),
+                   EdgeData(BR),
                }} {}
 
 Cube::~Cube() {}
@@ -211,4 +211,8 @@ bool Cube::is_solved() const {
   }
 
   return true;
+}
+
+void Cube::solve() {
+  std::cout << "Solve method called" << std::endl;
 }

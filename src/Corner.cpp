@@ -1,4 +1,4 @@
-#include "Cube.hpp"
+#include "Corner.hpp"
 
 std::ostream& operator<<(std::ostream& os, Corner corner) {
   switch (corner) {

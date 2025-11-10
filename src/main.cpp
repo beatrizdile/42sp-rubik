@@ -11,34 +11,13 @@ int main(int argc, char** argv) {
     return (1);
   }
 
-  std::stringstream ss(argv[1]);
-  std::string word;
+  try {
+    std::vector<Movement> movements = parseMovements(argv[1]);
+    Cube cube;
 
-  std::vector<Movement> movements;
-  while (ss >> word) {
-    try {
-      Movement movement(word);
-      movements.push_back(movement);
-    } catch (const std::exception& e) {
-      std::cerr << e.what() << std::endl;
-      return (EXIT_FAILURE);
-    }
+    return (EXIT_SUCCESS);
+  } catch (const std::exception& e) {
+    std::cerr << e.what() << std::endl;
+    return (EXIT_FAILURE);
   }
-
-  Cube cube;
-
-  std::cout << cube << std::endl
-            << std::endl;
-
-  std::cout << "Movements: ";
-  for (const auto& movement : movements) {
-    std::cout << movement << " ";
-    cube.rotate(movement);
-  }
-  std::cout << std::endl
-            << std::endl;
-
-  std::cout << cube << std::endl;
-
-  return (EXIT_SUCCESS);
 }

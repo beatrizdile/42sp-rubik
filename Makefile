@@ -1,7 +1,7 @@
 NAME 			= rubik
 CC 				= c++
-FLAGS 			= -Wall -Wextra -Werror
-VALGRIND 		= valgrind --leak-check=full --show-leak-kinds=all ./$(NAME)
+FLAGS 			= -Wall -Wextra -Werror -std=c++23
+VALGRIND 		= valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes -q
 
 SRC_DIR 		= src
 OBJ_DIR 		= obj
@@ -11,8 +11,8 @@ TEST_OBJ_DIR 	= obj/tests
 SRC 			= $(wildcard $(SRC_DIR)/*.cpp)
 OBJ 			= $(SRC:$(SRC_DIR)/%.cpp=$(OBJ_DIR)/%.o)
 
-INCLUDE_FILES 	= $(wildcard inc/*.hpp)
-INCLUDE_FLAG 	= -Iinc
+INCLUDE_FILES 	= $(wildcard include/*.hpp)
+INCLUDE_FLAG 	= -Iinclude
 
 TEST_SRC 			= $(wildcard $(TEST_DIR)/*.cpp)
 TEST_OBJ 			= $(TEST_SRC:$(TEST_DIR)/%.cpp=$(TEST_OBJ_DIR)/%.o)
@@ -53,4 +53,10 @@ $(CATCH_HEADER):
 $(TEST_BIN): $(OBJ) $(TEST_OBJ) $(INCLUDE_FILES) $(CATCH_HEADER) | $(TEST_OBJ_DIR)
 	$(CC) $(FLAGS) $(filter-out $(OBJ_DIR)/main.o, $(OBJ)) $(TEST_OBJ) -o $(TEST_BIN)
 
-.PHONY: all clean fclean re test
+run: $(NAME)
+	./$(NAME) "$(ARGS)"
+
+val: $(NAME)
+	$(VALGRIND) ./$(NAME) "$(ARGS)"
+
+.PHONY: all clean fclean re test run val

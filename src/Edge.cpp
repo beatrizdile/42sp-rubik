@@ -1,4 +1,4 @@
-#include "Cube.hpp"
+#include "Edge.hpp"
 
 std::ostream& operator<<(std::ostream& os, Edge edge) {
   switch (edge) {

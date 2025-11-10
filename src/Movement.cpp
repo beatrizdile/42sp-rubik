@@ -96,3 +96,16 @@ std::ostream& operator<<(std::ostream& os, const Movement& movement) {
 
   return os;
 }
+
+std::vector<Movement> parseMovements(const std::string& input) {
+  std::stringstream ss(input);
+  std::string word;
+  std::vector<Movement> movements;
+
+  while (ss >> word) {
+    Movement movement(word);
+    movements.push_back(movement);
+  }
+
+  return movements;
+}
