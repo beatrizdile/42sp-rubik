@@ -59,32 +59,46 @@ void keyboard(unsigned char key, int x, int y) {
   }
 
   switch (key) {
-    case 27:  // ESC
-      glutLeaveMainLoop();
-      break;
     case 'f':
-    case 'F':
       animationState.startAnimation(Move::MOVE_FRONT, MoveType::CLOCK_WISE);
       break;
     case 'b':
-    case 'B':
       animationState.startAnimation(Move::MOVE_BACK, MoveType::CLOCK_WISE);
       break;
     case 'r':
-    case 'R':
       animationState.startAnimation(Move::MOVE_RIGHT, MoveType::CLOCK_WISE);
       break;
     case 'l':
-    case 'L':
       animationState.startAnimation(Move::MOVE_LEFT, MoveType::CLOCK_WISE);
       break;
     case 'u':
-    case 'U':
       animationState.startAnimation(Move::MOVE_UP, MoveType::CLOCK_WISE);
       break;
     case 'd':
-    case 'D':
       animationState.startAnimation(Move::MOVE_DOWN, MoveType::CLOCK_WISE);
+      break;
+
+    case 'F':
+      animationState.startAnimation(Move::MOVE_FRONT, MoveType::ANTI_CLOCK_WISE);
+      break;
+    case 'B':
+      animationState.startAnimation(Move::MOVE_BACK, MoveType::ANTI_CLOCK_WISE);
+      break;
+    case 'R':
+      animationState.startAnimation(Move::MOVE_RIGHT, MoveType::ANTI_CLOCK_WISE);
+      break;
+    case 'L':
+      animationState.startAnimation(Move::MOVE_LEFT, MoveType::ANTI_CLOCK_WISE);
+      break;
+    case 'U':
+      animationState.startAnimation(Move::MOVE_UP, MoveType::ANTI_CLOCK_WISE);
+      break;
+    case 'D':
+      animationState.startAnimation(Move::MOVE_DOWN, MoveType::ANTI_CLOCK_WISE);
+      break;
+
+    case 27:  // ESC
+      glutLeaveMainLoop();
       break;
     default:
       return;

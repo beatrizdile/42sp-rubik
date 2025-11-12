@@ -197,11 +197,12 @@ void drawHelpText(int window_width, int window_height) {
   float x_pos = 20.0f;
   const char* help_lines[] = {
       "Controles:",
+      "F/B/L/R/U/D: Gira face anti-horário", 
+      "f/b/l/r/u/d: Gira face horário",
       "Setas: Gira câmera",
-      "F/B/L/R/U/D: Gira faces do cubo",
       "ESC: Sair"};
 
-  for (int i = 0; i < 4; i++) {
+  for (int i = 0; i < 5; i++) {
     glRasterPos2f(x_pos, y_pos - (i * 30.0f));
     const char* text = help_lines[i];
     while (*text) {
