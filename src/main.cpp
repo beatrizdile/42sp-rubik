@@ -12,12 +12,12 @@
 CameraState cameraState;
 Cube cube;
 
-void updateCamera() {
-  float azimuthRad = cameraState.cameraAzimuth * M_PI / 180.0f;
-  float elevationRad = cameraState.cameraElevation * M_PI / 180.0f;
-  float camX = RubikConfig::CAMERA_DISTANCE * cos(elevationRad) * cos(azimuthRad);
-  float camY = RubikConfig::CAMERA_DISTANCE * sin(elevationRad);
-  float camZ = RubikConfig::CAMERA_DISTANCE * cos(elevationRad) * sin(azimuthRad);
+void updateCamera() noexcept {
+  const float azimuthRad = cameraState.cameraAzimuth * M_PI / 180.0f;
+  const float elevationRad = cameraState.cameraElevation * M_PI / 180.0f;
+  const float camX = RubikConfig::CAMERA_DISTANCE * cos(elevationRad) * cos(azimuthRad);
+  const float camY = RubikConfig::CAMERA_DISTANCE * sin(elevationRad);
+  const float camZ = RubikConfig::CAMERA_DISTANCE * cos(elevationRad) * sin(azimuthRad);
 
   gluLookAt(camX, camY, camZ,
             0.0f, 0.0f, 0.0f,
@@ -35,9 +35,11 @@ void display() {
   for (size_t i = 0; i < cube.corners.size(); i++) {
     drawCorner(static_cast<Corner>(i), cube.corners[i], RubikConfig::CUBE_SIZE);
   }
+
   for (size_t i = 0; i < cube.edges.size(); i++) {
     drawEdge(static_cast<Edge>(i), cube.edges[i], RubikConfig::CUBE_SIZE);
   }
+
   for (int i = 0; i < 6; i++) {
     drawCenter(static_cast<Face>(i), RubikConfig::CUBE_SIZE);
   }

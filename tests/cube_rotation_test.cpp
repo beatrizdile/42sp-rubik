@@ -115,16 +115,16 @@ TEST_CASE("Cube rotation - Rotação U (Up)", "[cube][rotation][up]") {
     cube.rotate(move_u);
 
     // Verificar corners afetados pela rotação U
-    REQUIRE(cube.corners[URF].corner == UFL);
-    REQUIRE(cube.corners[UFL].corner == ULB);
-    REQUIRE(cube.corners[ULB].corner == UBR);
-    REQUIRE(cube.corners[UBR].corner == URF);
+    REQUIRE(cube.corners[URF].corner == UBR);
+    REQUIRE(cube.corners[UFL].corner == URF);
+    REQUIRE(cube.corners[ULB].corner == UFL);
+    REQUIRE(cube.corners[UBR].corner == ULB);
 
     // Verificar edges afetados pela rotação U
-    REQUIRE(cube.edges[UR].edge == UF);
-    REQUIRE(cube.edges[UF].edge == UL);
-    REQUIRE(cube.edges[UL].edge == UB);
-    REQUIRE(cube.edges[UB].edge == UR);
+    REQUIRE(cube.edges[UR].edge == UB);
+    REQUIRE(cube.edges[UF].edge == UR);
+    REQUIRE(cube.edges[UL].edge == UF);
+    REQUIRE(cube.edges[UB].edge == UL);
 
     REQUIRE_FALSE(cube.is_solved());
   }
@@ -150,16 +150,16 @@ TEST_CASE("Cube rotation - Rotação D (Down)", "[cube][rotation][down]") {
     cube.rotate(move_d);
 
     // Verificar corners afetados pela rotação D
-    REQUIRE(cube.corners[DRB].corner == DBL);
-    REQUIRE(cube.corners[DBL].corner == DLF);
-    REQUIRE(cube.corners[DLF].corner == DFR);
-    REQUIRE(cube.corners[DFR].corner == DRB);
+    REQUIRE(cube.corners[DRB].corner == DFR);
+    REQUIRE(cube.corners[DBL].corner == DRB);
+    REQUIRE(cube.corners[DLF].corner == DBL);
+    REQUIRE(cube.corners[DFR].corner == DLF);
 
     // Verificar edges afetados pela rotação D
-    REQUIRE(cube.edges[DB].edge == DL);
-    REQUIRE(cube.edges[DL].edge == DF);
-    REQUIRE(cube.edges[DF].edge == DR);
-    REQUIRE(cube.edges[DR].edge == DB);
+    REQUIRE(cube.edges[DB].edge == DR);
+    REQUIRE(cube.edges[DL].edge == DB);
+    REQUIRE(cube.edges[DF].edge == DL);
+    REQUIRE(cube.edges[DR].edge == DF);
 
     REQUIRE_FALSE(cube.is_solved());
   }

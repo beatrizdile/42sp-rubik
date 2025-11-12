@@ -65,49 +65,49 @@ void drawCube(std::map<Face, float[3]> face_colors, float cube_size) {
   glVertex3f(-half_size, half_size, -half_size);
   glEnd();
 
-  float small_size = half_size * DrawConfig::FACE_SCALE;
+  float small_size = half_size * RubikConfig::FACE_SCALE;
   glBegin(GL_QUADS);
   if (face_colors.find(FRONT) != face_colors.end()) {
     glColor3f(face_colors[FRONT][0], face_colors[FRONT][1], face_colors[FRONT][2]);
-    glVertex3f(-small_size, -small_size, half_size + DrawConfig::FACE_OFFSET);
-    glVertex3f(small_size, -small_size, half_size + DrawConfig::FACE_OFFSET);
-    glVertex3f(small_size, small_size, half_size + DrawConfig::FACE_OFFSET);
-    glVertex3f(-small_size, small_size, half_size + DrawConfig::FACE_OFFSET);
+    glVertex3f(-small_size, -small_size, half_size + RubikConfig::FACE_OFFSET);
+    glVertex3f(small_size, -small_size, half_size + RubikConfig::FACE_OFFSET);
+    glVertex3f(small_size, small_size, half_size + RubikConfig::FACE_OFFSET);
+    glVertex3f(-small_size, small_size, half_size + RubikConfig::FACE_OFFSET);
   }
   if (face_colors.find(BACK) != face_colors.end()) {
     glColor3f(face_colors[BACK][0], face_colors[BACK][1], face_colors[BACK][2]);
-    glVertex3f(-small_size, -small_size, -(half_size + DrawConfig::FACE_OFFSET));
-    glVertex3f(-small_size, small_size, -(half_size + DrawConfig::FACE_OFFSET));
-    glVertex3f(small_size, small_size, -(half_size + DrawConfig::FACE_OFFSET));
-    glVertex3f(small_size, -small_size, -(half_size + DrawConfig::FACE_OFFSET));
+    glVertex3f(-small_size, -small_size, -(half_size + RubikConfig::FACE_OFFSET));
+    glVertex3f(-small_size, small_size, -(half_size + RubikConfig::FACE_OFFSET));
+    glVertex3f(small_size, small_size, -(half_size + RubikConfig::FACE_OFFSET));
+    glVertex3f(small_size, -small_size, -(half_size + RubikConfig::FACE_OFFSET));
   }
   if (face_colors.find(UP) != face_colors.end()) {
     glColor3f(face_colors[UP][0], face_colors[UP][1], face_colors[UP][2]);
-    glVertex3f(-small_size, half_size + DrawConfig::FACE_OFFSET, -small_size);
-    glVertex3f(-small_size, half_size + DrawConfig::FACE_OFFSET, small_size);
-    glVertex3f(small_size, half_size + DrawConfig::FACE_OFFSET, small_size);
-    glVertex3f(small_size, half_size + DrawConfig::FACE_OFFSET, -small_size);
+    glVertex3f(-small_size, half_size + RubikConfig::FACE_OFFSET, -small_size);
+    glVertex3f(-small_size, half_size + RubikConfig::FACE_OFFSET, small_size);
+    glVertex3f(small_size, half_size + RubikConfig::FACE_OFFSET, small_size);
+    glVertex3f(small_size, half_size + RubikConfig::FACE_OFFSET, -small_size);
   }
   if (face_colors.find(DOWN) != face_colors.end()) {
     glColor3f(face_colors[DOWN][0], face_colors[DOWN][1], face_colors[DOWN][2]);
-    glVertex3f(-small_size, -(half_size + DrawConfig::FACE_OFFSET), -small_size);
-    glVertex3f(small_size, -(half_size + DrawConfig::FACE_OFFSET), -small_size);
-    glVertex3f(small_size, -(half_size + DrawConfig::FACE_OFFSET), small_size);
-    glVertex3f(-small_size, -(half_size + DrawConfig::FACE_OFFSET), small_size);
+    glVertex3f(-small_size, -(half_size + RubikConfig::FACE_OFFSET), -small_size);
+    glVertex3f(small_size, -(half_size + RubikConfig::FACE_OFFSET), -small_size);
+    glVertex3f(small_size, -(half_size + RubikConfig::FACE_OFFSET), small_size);
+    glVertex3f(-small_size, -(half_size + RubikConfig::FACE_OFFSET), small_size);
   }
   if (face_colors.find(RIGHT) != face_colors.end()) {
     glColor3f(face_colors[RIGHT][0], face_colors[RIGHT][1], face_colors[RIGHT][2]);
-    glVertex3f(half_size + DrawConfig::FACE_OFFSET, -small_size, -small_size);
-    glVertex3f(half_size + DrawConfig::FACE_OFFSET, small_size, -small_size);
-    glVertex3f(half_size + DrawConfig::FACE_OFFSET, small_size, small_size);
-    glVertex3f(half_size + DrawConfig::FACE_OFFSET, -small_size, small_size);
+    glVertex3f(half_size + RubikConfig::FACE_OFFSET, -small_size, -small_size);
+    glVertex3f(half_size + RubikConfig::FACE_OFFSET, small_size, -small_size);
+    glVertex3f(half_size + RubikConfig::FACE_OFFSET, small_size, small_size);
+    glVertex3f(half_size + RubikConfig::FACE_OFFSET, -small_size, small_size);
   }
   if (face_colors.find(LEFT) != face_colors.end()) {
     glColor3f(face_colors[LEFT][0], face_colors[LEFT][1], face_colors[LEFT][2]);
-    glVertex3f(-(half_size + DrawConfig::FACE_OFFSET), -small_size, -small_size);
-    glVertex3f(-(half_size + DrawConfig::FACE_OFFSET), -small_size, small_size);
-    glVertex3f(-(half_size + DrawConfig::FACE_OFFSET), small_size, small_size);
-    glVertex3f(-(half_size + DrawConfig::FACE_OFFSET), small_size, -small_size);
+    glVertex3f(-(half_size + RubikConfig::FACE_OFFSET), -small_size, -small_size);
+    glVertex3f(-(half_size + RubikConfig::FACE_OFFSET), -small_size, small_size);
+    glVertex3f(-(half_size + RubikConfig::FACE_OFFSET), small_size, small_size);
+    glVertex3f(-(half_size + RubikConfig::FACE_OFFSET), small_size, -small_size);
   }
   glEnd();
 }
@@ -258,14 +258,14 @@ void setupLighting() {
   glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
 
   glEnable(GL_LIGHT0);
-  glLightfv(GL_LIGHT0, GL_AMBIENT, DrawConfig::LIGHT_AMBIENT);
-  glLightfv(GL_LIGHT0, GL_DIFFUSE, DrawConfig::LIGHT_DIFFUSE);
+  glLightfv(GL_LIGHT0, GL_AMBIENT, RubikConfig::LIGHT_AMBIENT);
+  glLightfv(GL_LIGHT0, GL_DIFFUSE, RubikConfig::LIGHT_DIFFUSE);
   glEnable(GL_LIGHT1);
-  glLightfv(GL_LIGHT0, GL_AMBIENT, DrawConfig::LIGHT1_AMBIENT);
-  glLightfv(GL_LIGHT0, GL_DIFFUSE, DrawConfig::LIGHT1_DIFFUSE);
+  glLightfv(GL_LIGHT0, GL_AMBIENT, RubikConfig::LIGHT1_AMBIENT);
+  glLightfv(GL_LIGHT0, GL_DIFFUSE, RubikConfig::LIGHT1_DIFFUSE);
 }
 
 void updateLightPosition() {
-  glLightfv(GL_LIGHT0, GL_POSITION, DrawConfig::LIGHT0_POSITION);
-  glLightfv(GL_LIGHT1, GL_POSITION, DrawConfig::LIGHT1_POSITION);
+  glLightfv(GL_LIGHT0, GL_POSITION, RubikConfig::LIGHT0_POSITION);
+  glLightfv(GL_LIGHT1, GL_POSITION, RubikConfig::LIGHT1_POSITION);
 }
