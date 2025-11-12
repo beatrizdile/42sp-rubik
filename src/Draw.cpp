@@ -112,33 +112,63 @@ void drawCube(std::map<Face, float[3]> face_colors, float cube_size) {
   glEnd();
 }
 
-void drawCorner(Corner position, CornerData corner, float cube_size) {
+void drawCorner(Corner position, CornerData corner, float cube_size, Move animMove, float animAngle) {
   float x, y, z;
   getCornerPositionCoordinates(position, x, y, z);
 
   glPushMatrix();
+  if (isPieceOnMove(animMove, position)) {
+    float axisX = 0.0f, axisY = 0.0f, axisZ = 0.0f;
+    getRotationAxisAndCenter(animMove, axisX, axisY, axisZ);
+    float angle = animAngle;
+    if (animMove == MOVE_BACK || animMove == MOVE_DOWN || animMove == MOVE_RIGHT) {
+      angle = -animAngle;
+    }
+    glRotatef(angle, axisX, axisY, axisZ);
+  }
+
   glTranslatef(x * cube_size, y * cube_size, z * cube_size);
   std::map<Face, float[3]> face_colors = corner.getFaceColors(position);
   drawCube(face_colors, cube_size);
   glPopMatrix();
 }
 
-void drawEdge(Edge position, EdgeData edge, float cube_size) {
+void drawEdge(Edge position, EdgeData edge, float cube_size, Move animMove, float animAngle) {
   float x, y, z;
   getEdgePositionCoordinates(position, x, y, z);
 
   glPushMatrix();
+  if (isPieceOnMove(animMove, position)) {
+    float axisX = 0.0f, axisY = 0.0f, axisZ = 0.0f;
+    getRotationAxisAndCenter(animMove, axisX, axisY, axisZ);
+    float angle = animAngle;
+    if (animMove == MOVE_BACK || animMove == MOVE_DOWN || animMove == MOVE_RIGHT) {
+      angle = -animAngle;
+    }
+    glRotatef(angle, axisX, axisY, axisZ);
+  }
+
   glTranslatef(x * cube_size, y * cube_size, z * cube_size);
   std::map<Face, float[3]> face_colors = edge.getFaceColors(position);
   drawCube(face_colors, cube_size);
   glPopMatrix();
 }
 
-void drawCenter(Face face, float cube_size) {
+void drawCenter(Face face, float cube_size, Move animMove, float animAngle) {
   float x, y, z;
   getFacePositionCoordinates(face, x, y, z);
 
   glPushMatrix();
+  if (isPieceOnMove(animMove, face)) {
+    float axisX = 0.0f, axisY = 0.0f, axisZ = 0.0f;
+    getRotationAxisAndCenter(animMove, axisX, axisY, axisZ);
+    float angle = animAngle;
+    if (animMove == MOVE_BACK || animMove == MOVE_DOWN || animMove == MOVE_RIGHT) {
+      angle = -animAngle;
+    }
+    glRotatef(angle, axisX, axisY, axisZ);
+  }
+
   glTranslatef(x * cube_size, y * cube_size, z * cube_size);
   std::map<Face, float[3]> face_colors = {};
   float color[3];
@@ -148,71 +178,6 @@ void drawCenter(Face face, float cube_size) {
   face_colors[face][2] = color[2];
   drawCube(face_colors, cube_size);
   glPopMatrix();
-}
-
-void drawCoordinateAxes() {
-  glPushAttrib(GL_ENABLE_BIT | GL_LIGHTING_BIT | GL_LINE_BIT);
-
-  glDisable(GL_LIGHTING);
-  glLineWidth(4.0f);
-
-  float axis_length = 2.0f;  // Comprimento dos eixos
-  float arrow_size = 0.2f;   // Tamanho das setas
-
-  glBegin(GL_LINES);
-
-  // Eixo X (vermelho) - da origem para direita
-  glColor3f(1.0f, 0.2f, 0.2f);
-  glVertex3f(0.0f, 0.0f, 0.0f);
-  glVertex3f(axis_length, 0.0f, 0.0f);
-
-  // Seta do eixo X
-  glVertex3f(axis_length, 0.0f, 0.0f);
-  glVertex3f(axis_length - arrow_size, arrow_size / 2, 0.0f);
-  glVertex3f(axis_length, 0.0f, 0.0f);
-  glVertex3f(axis_length - arrow_size, -arrow_size / 2, 0.0f);
-
-  // Eixo Y (verde) - da origem para cima
-  glColor3f(0.2f, 1.0f, 0.2f);
-  glVertex3f(0.0f, 0.0f, 0.0f);
-  glVertex3f(0.0f, axis_length, 0.0f);
-
-  // Seta do eixo Y
-  glVertex3f(0.0f, axis_length, 0.0f);
-  glVertex3f(arrow_size / 2, axis_length - arrow_size, 0.0f);
-  glVertex3f(0.0f, axis_length, 0.0f);
-  glVertex3f(-arrow_size / 2, axis_length - arrow_size, 0.0f);
-
-  // Eixo Z (azul) - da origem para frente
-  glColor3f(0.2f, 0.2f, 1.0f);
-  glVertex3f(0.0f, 0.0f, 0.0f);
-  glVertex3f(0.0f, 0.0f, axis_length);
-
-  // Seta do eixo Z
-  glVertex3f(0.0f, 0.0f, axis_length);
-  glVertex3f(arrow_size / 2, 0.0f, axis_length - arrow_size);
-  glVertex3f(0.0f, 0.0f, axis_length);
-  glVertex3f(-arrow_size / 2, 0.0f, axis_length - arrow_size);
-
-  glEnd();
-
-  // Adicionar labels dos eixos
-  glColor3f(1.0f, 1.0f, 1.0f);
-
-  // Label X
-  glRasterPos3f(axis_length + 0.2f, 0.0f, 0.0f);
-  glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, 'X');
-
-  // Label Y
-  glRasterPos3f(0.0f, axis_length + 0.2f, 0.0f);
-  glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, 'Y');
-
-  // Label Z
-  glRasterPos3f(0.0f, 0.0f, axis_length + 0.2f);
-  glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, 'Z');
-
-  // Restaura estados
-  glPopAttrib();
 }
 
 void drawHelpText(int window_width, int window_height) {
@@ -268,4 +233,25 @@ void setupLighting() {
 void updateLightPosition() {
   glLightfv(GL_LIGHT0, GL_POSITION, RubikConfig::LIGHT0_POSITION);
   glLightfv(GL_LIGHT1, GL_POSITION, RubikConfig::LIGHT1_POSITION);
+}
+
+void getRotationAxisAndCenter(Move move, float& axisX, float& axisY, float& axisZ) {
+  axisX = 0.0f;
+  axisY = 0.0f;
+  axisZ = 0.0f;
+
+  switch (move) {
+    case MOVE_FRONT:
+    case MOVE_BACK:
+      axisZ = -1.0f;
+      break;
+    case MOVE_UP:
+    case MOVE_DOWN:
+      axisY = -1.0f;
+      break;
+    case MOVE_LEFT:
+    case MOVE_RIGHT:
+      axisX = 1.0f;
+      break;
+  }
 }

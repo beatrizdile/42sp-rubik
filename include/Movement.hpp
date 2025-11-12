@@ -1,8 +1,12 @@
 #pragma once
 
 #include <iostream>
-#include <vector>
 #include <sstream>
+#include <vector>
+
+#include "Corner.hpp"
+#include "Edge.hpp"
+#include "Movement.hpp"
 
 enum MoveType {
   CLOCK_WISE = 1,
@@ -35,3 +39,7 @@ class Movement {
 };
 
 std::vector<Movement> parseMovements(const std::string& input);
+float getMoveAngle(MoveType type);
+bool isPieceOnMove(Move move, Corner corner);
+bool isPieceOnMove(Move move, Edge edge);
+bool isPieceOnMove(Move move, Face face);

@@ -10,6 +10,7 @@
 #include "Edge.hpp"
 
 CameraState cameraState;
+AnimationState animationState;
 Cube cube;
 
 void updateCamera() noexcept {
@@ -31,20 +32,18 @@ void display() {
   updateCamera();
   updateLightPosition();
 
+  Move currentMove = animationState.currentMove;
+  float currentAngle = animationState.currentAngle;
   glPushMatrix();
-  for (size_t i = 0; i < cube.corners.size(); i++) {
-    drawCorner(static_cast<Corner>(i), cube.corners[i], RubikConfig::CUBE_SIZE);
+  for (size_t i = 0; i < cube.corners.size(); ++i) {
+    drawCorner(static_cast<Corner>(i), cube.corners[i], RubikConfig::CUBE_SIZE, currentMove, currentAngle);
   }
-
-  for (size_t i = 0; i < cube.edges.size(); i++) {
-    drawEdge(static_cast<Edge>(i), cube.edges[i], RubikConfig::CUBE_SIZE);
+  for (size_t i = 0; i < cube.edges.size(); ++i) {
+    drawEdge(static_cast<Edge>(i), cube.edges[i], RubikConfig::CUBE_SIZE, currentMove, currentAngle);
   }
-
-  for (int i = 0; i < 6; i++) {
-    drawCenter(static_cast<Face>(i), RubikConfig::CUBE_SIZE);
+  for (int i = 0; i < 6; ++i) {
+    drawCenter(static_cast<Face>(i), RubikConfig::CUBE_SIZE, currentMove, currentAngle);
   }
-
-  drawCoordinateAxes();
   glPopMatrix();
 
   drawHelpText(RubikConfig::WINDOW_WIDTH, RubikConfig::WINDOW_HEIGHT);
@@ -55,33 +54,37 @@ void keyboard(unsigned char key, int x, int y) {
   (void)x;
   (void)y;
 
+  if (animationState.isAnimating) {
+    return;
+  }
+
   switch (key) {
     case 27:  // ESC
       glutLeaveMainLoop();
       break;
     case 'f':
     case 'F':
-      cube.rotate(Movement(Move::MOVE_FRONT));
+      animationState.startAnimation(Move::MOVE_FRONT, MoveType::CLOCK_WISE);
       break;
     case 'b':
     case 'B':
-      cube.rotate(Movement(Move::MOVE_BACK));
+      animationState.startAnimation(Move::MOVE_BACK, MoveType::CLOCK_WISE);
       break;
     case 'r':
     case 'R':
-      cube.rotate(Movement(Move::MOVE_RIGHT));
+      animationState.startAnimation(Move::MOVE_RIGHT, MoveType::CLOCK_WISE);
       break;
     case 'l':
     case 'L':
-      cube.rotate(Movement(Move::MOVE_LEFT));
+      animationState.startAnimation(Move::MOVE_LEFT, MoveType::CLOCK_WISE);
       break;
     case 'u':
     case 'U':
-      cube.rotate(Movement(Move::MOVE_UP));
+      animationState.startAnimation(Move::MOVE_UP, MoveType::CLOCK_WISE);
       break;
     case 'd':
     case 'D':
-      cube.rotate(Movement(Move::MOVE_DOWN));
+      animationState.startAnimation(Move::MOVE_DOWN, MoveType::CLOCK_WISE);
       break;
     default:
       return;
@@ -119,6 +122,14 @@ void specialKeys(int key, int x, int y) {
 
 void timer(int value) {
   (void)value;
+
+  if (animationState.isAnimating) {
+    animationState.updateAnimation();
+    if (!animationState.isAnimating) {
+      cube.rotate(Movement(animationState.currentMove, animationState.currentType));
+    }
+    glutPostRedisplay();
+  }
 
   glutTimerFunc(RubikConfig::FRAME_TIME, timer, 0);
 }

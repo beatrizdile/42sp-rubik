@@ -111,3 +111,70 @@ std::vector<Movement> parseMovements(const std::string& input) {
 
   return movements;
 }
+
+float getMoveAngle(MoveType type) {
+  switch (type) {
+    case MoveType::CLOCK_WISE:
+      return 90.0f;
+    case MoveType::TWICE:
+      return 180.0f;
+    case MoveType::ANTI_CLOCK_WISE:
+      return -90.0f;
+  }
+
+  return 0.0f;
+}
+
+bool isPieceOnMove(Move move, Corner corner) {
+  switch (move) {
+    case MOVE_FRONT:
+      return corner == URF || corner == UFL || corner == DLF || corner == DFR;
+    case MOVE_BACK:
+      return corner == UBR || corner == ULB || corner == DBL || corner == DRB;
+    case MOVE_UP:
+      return corner == URF || corner == UFL || corner == ULB || corner == UBR;
+    case MOVE_DOWN:
+      return corner == DFR || corner == DLF || corner == DBL || corner == DRB;
+    case MOVE_LEFT:
+      return corner == UFL || corner == ULB || corner == DBL || corner == DLF;
+    case MOVE_RIGHT:
+      return corner == URF || corner == UBR || corner == DRB || corner == DFR;
+  }
+  return false;
+}
+
+bool isPieceOnMove(Move move, Edge edge) {
+  switch (move) {
+    case MOVE_FRONT:
+      return edge == UF || edge == FR || edge == DF || edge == FL;
+    case MOVE_BACK:
+      return edge == UB || edge == BR || edge == DB || edge == BL;
+    case MOVE_UP:
+      return edge == UR || edge == UF || edge == UL || edge == UB;
+    case MOVE_DOWN:
+      return edge == DR || edge == DF || edge == DL || edge == DB;
+    case MOVE_LEFT:
+      return edge == UL || edge == FL || edge == DL || edge == BL;
+    case MOVE_RIGHT:
+      return edge == UR || edge == FR || edge == DR || edge == BR;
+  }
+  return false;
+}
+
+bool isPieceOnMove(Move move, Face face) {
+  switch (move) {
+    case MOVE_FRONT:
+      return face == FRONT;
+    case MOVE_BACK:
+      return face == BACK;
+    case MOVE_UP:
+      return face == UP;
+    case MOVE_DOWN:
+      return face == DOWN;
+    case MOVE_LEFT:
+      return face == LEFT;
+    case MOVE_RIGHT:
+      return face == RIGHT;
+  }
+  return false;
+}

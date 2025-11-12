@@ -43,19 +43,19 @@ TEST_CASE("Cube rotation - Rotação F (Front)", "[cube][rotation][front]") {
     Movement move_f("F");
     cube.rotate(move_f);
 
-    // Verificar corners afetados pela rotação F
+    // Check corners affected by rotation F
     REQUIRE(cube.corners[URF].corner == UFL);
     REQUIRE(cube.corners[UFL].corner == DLF);
     REQUIRE(cube.corners[DLF].corner == DFR);
     REQUIRE(cube.corners[DFR].corner == URF);
 
-    // Verificar edges afetados pela rotação F
+    // Check edges affected by rotation F
     REQUIRE(cube.edges[FR].edge == UF);
     REQUIRE(cube.edges[UF].edge == FL);
     REQUIRE(cube.edges[FL].edge == DF);
     REQUIRE(cube.edges[DF].edge == FR);
 
-    // Cubo não deve estar resolvido após uma rotação
+    // Cube should not be solved after a rotation
     REQUIRE_FALSE(cube.is_solved());
   }
 
@@ -79,13 +79,13 @@ TEST_CASE("Cube rotation - Rotação R (Right)", "[cube][rotation][right]") {
     Movement move_r("R");
     cube.rotate(move_r);
 
-    // Verificar corners afetados pela rotação R
+    // Check corners affected by rotation R
     REQUIRE(cube.corners[UBR].corner == URF);
     REQUIRE(cube.corners[URF].corner == DFR);
     REQUIRE(cube.corners[DFR].corner == DRB);
     REQUIRE(cube.corners[DRB].corner == UBR);
 
-    // Verificar edges afetados pela rotação R
+    // Check edges affected by rotation R
     REQUIRE(cube.edges[BR].edge == UR);
     REQUIRE(cube.edges[UR].edge == FR);
     REQUIRE(cube.edges[FR].edge == DR);
@@ -114,13 +114,13 @@ TEST_CASE("Cube rotation - Rotação U (Up)", "[cube][rotation][up]") {
     Movement move_u("U");
     cube.rotate(move_u);
 
-    // Verificar corners afetados pela rotação U
+    // Check corners affected by rotation U
     REQUIRE(cube.corners[URF].corner == UBR);
     REQUIRE(cube.corners[UFL].corner == URF);
     REQUIRE(cube.corners[ULB].corner == UFL);
     REQUIRE(cube.corners[UBR].corner == ULB);
 
-    // Verificar edges afetados pela rotação U
+    // Check edges affected by rotation U
     REQUIRE(cube.edges[UR].edge == UB);
     REQUIRE(cube.edges[UF].edge == UR);
     REQUIRE(cube.edges[UL].edge == UF);
@@ -149,13 +149,13 @@ TEST_CASE("Cube rotation - Rotação D (Down)", "[cube][rotation][down]") {
     Movement move_d("D");
     cube.rotate(move_d);
 
-    // Verificar corners afetados pela rotação D
+    // Check corners affected by rotation D
     REQUIRE(cube.corners[DRB].corner == DFR);
     REQUIRE(cube.corners[DBL].corner == DRB);
     REQUIRE(cube.corners[DLF].corner == DBL);
     REQUIRE(cube.corners[DFR].corner == DLF);
 
-    // Verificar edges afetados pela rotação D
+    // Check edges affected by rotation D
     REQUIRE(cube.edges[DB].edge == DR);
     REQUIRE(cube.edges[DL].edge == DB);
     REQUIRE(cube.edges[DF].edge == DL);
@@ -184,13 +184,13 @@ TEST_CASE("Cube rotation - Rotação L (Left)", "[cube][rotation][left]") {
     Movement move_l("L");
     cube.rotate(move_l);
 
-    // Verificar corners afetados pela rotação L
+    // Check corners affected by rotation L
     REQUIRE(cube.corners[UFL].corner == ULB);
     REQUIRE(cube.corners[ULB].corner == DBL);
     REQUIRE(cube.corners[DBL].corner == DLF);
     REQUIRE(cube.corners[DLF].corner == UFL);
 
-    // Verificar edges afetados pela rotação L
+    // Check edges affected by rotation L
     REQUIRE(cube.edges[FL].edge == UL);
     REQUIRE(cube.edges[UL].edge == BL);
     REQUIRE(cube.edges[BL].edge == DL);
@@ -219,13 +219,13 @@ TEST_CASE("Cube rotation - Rotação B (Back)", "[cube][rotation][back]") {
     Movement move_b("B");
     cube.rotate(move_b);
 
-    // Verificar corners afetados pela rotação B
+    // Check corners affected by rotation B
     REQUIRE(cube.corners[DRB].corner == DBL);
     REQUIRE(cube.corners[DBL].corner == ULB);
     REQUIRE(cube.corners[ULB].corner == UBR);
     REQUIRE(cube.corners[UBR].corner == DRB);
 
-    // Verificar edges afetados pela rotação B
+    // Check edges affected by rotation B
     REQUIRE(cube.edges[BR].edge == DB);
     REQUIRE(cube.edges[DB].edge == BL);
     REQUIRE(cube.edges[BL].edge == UB);
@@ -317,7 +317,7 @@ TEST_CASE("Cube rotation - Sequências complexas", "[cube][rotation][sequence]")
   SECTION("Algoritmo R U R' U' deve ser reversível") {
     Cube original_cube = cube;
 
-    // Aplicar algoritmo 6 vezes (período do algoritmo)
+    // Apply algorithm 6 times (algorithm period)
     for (int cycle = 0; cycle < 6; cycle++) {
       Movement r("R");
       Movement u("U");
@@ -339,7 +339,7 @@ TEST_CASE("Cube rotation - Sequências complexas", "[cube][rotation][sequence]")
     std::vector<std::string> scramble = {"R", "U", "R'", "F", "R", "F'"};
     std::vector<std::string> solution = {"F", "R'", "F'", "R", "U'", "R'"};
 
-    // Aplicar scramble
+    // Apply scramble
     for (const auto& move_str : scramble) {
       Movement move(move_str);
       cube.rotate(move);
@@ -347,7 +347,7 @@ TEST_CASE("Cube rotation - Sequências complexas", "[cube][rotation][sequence]")
 
     REQUIRE_FALSE(cube.is_solved());
 
-    // Aplicar solução
+    // Apply solution
     for (const auto& move_str : solution) {
       Movement move(move_str);
       cube.rotate(move);
