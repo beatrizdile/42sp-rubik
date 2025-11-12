@@ -194,3 +194,13 @@ bool isPieceOnMove(Move move, Face face) {
   }
   return false;
 }
+
+Movement randomMovement() {
+  Move moves[] = {MOVE_FRONT, MOVE_BACK, MOVE_UP, MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT};
+  MoveType types[] = {CLOCK_WISE, TWICE, ANTI_CLOCK_WISE};
+
+  Move randomMove = moves[rand() % 6];
+  MoveType randomType = types[rand() % 3];
+
+  return Movement(randomMove, randomType);
+}

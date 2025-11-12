@@ -44,3 +44,4 @@ float getMoveAngle(MoveType type);
 bool isPieceOnMove(Move move, Corner corner);
 bool isPieceOnMove(Move move, Edge edge);
 bool isPieceOnMove(Move move, Face face);
+Movement randomMovement();

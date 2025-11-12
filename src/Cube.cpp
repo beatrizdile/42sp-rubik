@@ -213,6 +213,17 @@ bool Cube::is_solved() const {
   return true;
 }
 
+void Cube::reset() {
+  *this = Cube();
+}
+
+void Cube::randomize(int random_moves_count) {
+  for (int i = 0; i < random_moves_count; ++i) {
+    Movement random_move = randomMovement();
+    rotate(random_move);
+  }
+}
+
 std::vector<Movement> Cube::solve() {
   std::cout << "Solve method called" << std::endl;
   return {Movement(MOVE_FRONT, CLOCK_WISE), Movement(MOVE_UP, ANTI_CLOCK_WISE)};

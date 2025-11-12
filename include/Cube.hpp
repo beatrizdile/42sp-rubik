@@ -20,6 +20,8 @@ class Cube {
   bool operator==(const Cube& other) const;
   bool is_solved() const;
   std::vector<Movement> solve();
+  void reset();
+  void randomize(int random_moves_count = 20);
 
  private:
   void rotate_front();

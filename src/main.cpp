@@ -67,6 +67,13 @@ void keyboard(unsigned char key, int x, int y) {
   }
 
   switch (key) {
+    case 's':
+      if (!animationState.isAnimating && movements.empty() && solution.empty()) {
+        srand(time(nullptr));
+        cube.randomize(20);
+      }
+      break;
+
     // Movimentos manuais (minúsculas = horário)
     case 'f':
       animationState.startAnimation(Move::MOVE_FRONT, MoveType::CLOCK_WISE);
