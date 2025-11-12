@@ -34,6 +34,9 @@ constexpr float ANIMATION_SPEED = 90.0f;
 constexpr float ANIMATION_DURATION_MS = 500.0f;
 constexpr int ANIMATION_STEPS = static_cast<int>(ANIMATION_DURATION_MS / FRAME_TIME);
 
+// Auto Movement
+constexpr int DELAY_BETWEEN_MOVEMENTS = 750;
+
 // Drawing
 constexpr float FACE_OFFSET = 0.01f;
 constexpr float FACE_SCALE = 0.85f;

@@ -1,7 +1,10 @@
 #include <GL/freeglut.h>
 #include <GL/glut.h>
 
+#include <chrono>
 #include <cmath>
+#include <iostream>
+#include <string>
 
 #include "Config.hpp"
 #include "Corner.hpp"
@@ -12,6 +15,8 @@
 CameraState cameraState;
 AnimationState animationState;
 Cube cube;
+std::vector<Movement> movements;
+std::vector<Movement> solution;
 
 void updateCamera() noexcept {
   const float azimuthRad = cameraState.cameraAzimuth * M_PI / 180.0f;
@@ -55,10 +60,14 @@ void keyboard(unsigned char key, int x, int y) {
   (void)y;
 
   if (animationState.isAnimating) {
+    if (key == 27) {
+      glutLeaveMainLoop();
+    }
     return;
   }
 
   switch (key) {
+    // Movimentos manuais (minúsculas = horário)
     case 'f':
       animationState.startAnimation(Move::MOVE_FRONT, MoveType::CLOCK_WISE);
       break;
@@ -78,6 +87,7 @@ void keyboard(unsigned char key, int x, int y) {
       animationState.startAnimation(Move::MOVE_DOWN, MoveType::CLOCK_WISE);
       break;
 
+    // Movimentos manuais (maiúsculas = anti-horário)
     case 'F':
       animationState.startAnimation(Move::MOVE_FRONT, MoveType::ANTI_CLOCK_WISE);
       break;
@@ -95,6 +105,26 @@ void keyboard(unsigned char key, int x, int y) {
       break;
     case 'D':
       animationState.startAnimation(Move::MOVE_DOWN, MoveType::ANTI_CLOCK_WISE);
+      break;
+
+    // Movimentos duplos (números)
+    case '1':  // F2
+      animationState.startAnimation(Move::MOVE_FRONT, MoveType::TWICE);
+      break;
+    case '2':  // B2
+      animationState.startAnimation(Move::MOVE_BACK, MoveType::TWICE);
+      break;
+    case '3':  // R2
+      animationState.startAnimation(Move::MOVE_RIGHT, MoveType::TWICE);
+      break;
+    case '4':  // L2
+      animationState.startAnimation(Move::MOVE_LEFT, MoveType::TWICE);
+      break;
+    case '5':  // U2
+      animationState.startAnimation(Move::MOVE_UP, MoveType::TWICE);
+      break;
+    case '6':  // D2
+      animationState.startAnimation(Move::MOVE_DOWN, MoveType::TWICE);
       break;
 
     case 27:  // ESC
@@ -143,19 +173,72 @@ void timer(int value) {
       cube.rotate(Movement(animationState.currentMove, animationState.currentType));
     }
     glutPostRedisplay();
+  } else {
+    static auto lastMoveTime = std::chrono::steady_clock::now();
+    auto currentTime = std::chrono::steady_clock::now();
+    auto timeSinceLastMove = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - lastMoveTime).count();
+
+    if (timeSinceLastMove >= RubikConfig::DELAY_BETWEEN_MOVEMENTS) {
+      if (!movements.empty()) {
+        Movement nextMove = movements.front();
+        movements.erase(movements.begin());
+        animationState.startAnimation(nextMove.move, nextMove.type);
+        lastMoveTime = currentTime;
+      } else if (!solution.empty()) {
+        Movement nextMove = solution.front();
+        solution.erase(solution.begin());
+        animationState.startAnimation(nextMove.move, nextMove.type);
+        lastMoveTime = currentTime;
+      }
+      glutPostRedisplay();
+    }
   }
 
   glutTimerFunc(RubikConfig::FRAME_TIME, timer, 0);
 }
 
 int main(int argc, char** argv) {
-  initGL(argc, argv);
+  if (argc != 2) {
+    std::cerr << "Usage: " << argv[0] << " \"<movements>\"" << std::endl;
+    return (EXIT_FAILURE);
+  }
 
+  std::stringstream ss(argv[1]);
+  std::string word;
+  while (ss >> word) {
+    try {
+      Movement movement(word);
+      movements.push_back(movement);
+    } catch (const std::exception& e) {
+      std::cerr << e.what() << std::endl;
+      return (EXIT_FAILURE);
+    }
+  }
+
+  if (movements.empty()) {
+    std::cerr << "No valid movements provided." << std::endl;
+    return (EXIT_FAILURE);
+  }
+
+  std::cout << "Calculating solution..." << std::endl;
+  auto start = std::chrono::high_resolution_clock::now();
+  for (auto it = movements.rbegin(); it != movements.rend(); ++it) {
+    solution.push_back(it->reverse());
+  }
+  auto end = std::chrono::high_resolution_clock::now();
+  auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start);
+  for (const auto& move : solution) {
+    std::cout << move << " ";
+  }
+  std::cout << std::endl;
+  std::cout << "Time spent calculating solution: " << duration.count() << " ns" << std::endl;
+
+  initGL(argc, argv);
   glutDisplayFunc(display);
   glutKeyboardFunc(keyboard);
   glutSpecialFunc(specialKeys);
   glutTimerFunc(RubikConfig::FRAME_TIME, timer, 0);
 
   glutMainLoop();
-  return 0;
+  return (EXIT_SUCCESS);
 }

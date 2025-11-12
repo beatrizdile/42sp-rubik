@@ -36,6 +36,7 @@ class Movement {
 
   Movement& operator=(Movement const& other);
   friend std::ostream& operator<<(std::ostream& os, const Movement& movement);
+  Movement reverse() const;
 };
 
 std::vector<Movement> parseMovements(const std::string& input);

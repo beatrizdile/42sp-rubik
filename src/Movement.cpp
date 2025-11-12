@@ -125,6 +125,22 @@ float getMoveAngle(MoveType type) {
   return 0.0f;
 }
 
+Movement Movement::reverse() const {
+  MoveType reversedType = CLOCK_WISE;
+  switch (type) {
+    case CLOCK_WISE:
+      reversedType = ANTI_CLOCK_WISE;
+      break;
+    case ANTI_CLOCK_WISE:
+      reversedType = CLOCK_WISE;
+      break;
+    case TWICE:
+      reversedType = TWICE;
+      break;
+  }
+  return Movement(move, reversedType);
+}
+
 bool isPieceOnMove(Move move, Corner corner) {
   switch (move) {
     case MOVE_FRONT:

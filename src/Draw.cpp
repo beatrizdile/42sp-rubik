@@ -4,7 +4,8 @@
 
 void initGL(int argc, char** argv) {
   glutInit(&argc, argv);
-  glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
+  glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH | GLUT_MULTISAMPLE);
+  glEnable(GL_MULTISAMPLE);
   glutInitWindowSize(RubikConfig::WINDOW_WIDTH, RubikConfig::WINDOW_HEIGHT);
   glutInitWindowPosition(100, 100);
   glutCreateWindow(RubikConfig::WINDOW_TITLE);
@@ -193,17 +194,18 @@ void drawHelpText(int window_width, int window_height) {
   glDisable(GL_LIGHTING);
 
   glColor3f(0.0f, 0.0f, 0.0f);
-  float y_pos = window_height - 30.0f;
-  float x_pos = 20.0f;
+  float y_pos = window_height - 20.0f;
+  float x_pos = 10.0f;
   const char* help_lines[] = {
       "Controles:",
-      "F/B/L/R/U/D: Gira face anti-horário", 
-      "f/b/l/r/u/d: Gira face horário",
-      "Setas: Gira câmera",
+      "Numeros (1-6): Rotacao dupla (F2,B2,R2,L2,U2,D2)",
+      "Maiusculas (F,B,R,L,U,D): Rotacao anti-horaria",
+      "Minusculas (f,b,r,l,u,d): Rotacao horaria",
+      "Setas: Gira camera",
       "ESC: Sair"};
 
-  for (int i = 0; i < 5; i++) {
-    glRasterPos2f(x_pos, y_pos - (i * 30.0f));
+  for (int i = 0; i < 6; i++) {
+    glRasterPos2f(x_pos, y_pos - (i * 20.0f));
     const char* text = help_lines[i];
     while (*text) {
       glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *text);
