@@ -1,6 +1,8 @@
 #include "Movement.hpp"
 
-Movement::Movement() : move(FRONT), type(CLOCK_WISE) {}
+Movement::Movement() : move(MOVE_FRONT), type(CLOCK_WISE) {}
+
+Movement::Movement(Move move) : move(move), type(CLOCK_WISE) {}
 
 Movement::Movement(Move move, MoveType type) : move(move), type(type) {}
 
@@ -17,22 +19,22 @@ Movement::Movement(std::string movement) {
 
   switch (movement[0]) {
     case 'F':
-      move = FRONT;
+      move = MOVE_FRONT;
       break;
     case 'B':
-      move = BACK;
+      move = MOVE_BACK;
       break;
     case 'U':
-      move = UP;
+      move = MOVE_UP;
       break;
     case 'D':
-      move = DOWN;
+      move = MOVE_DOWN;
       break;
     case 'L':
-      move = LEFT;
+      move = MOVE_LEFT;
       break;
     case 'R':
-      move = RIGHT;
+      move = MOVE_RIGHT;
       break;
     default:
       throw std::invalid_argument("Invalid movement: " + movement);
@@ -63,22 +65,22 @@ Movement& Movement::operator=(Movement const& other) {
 
 std::ostream& operator<<(std::ostream& os, const Movement& movement) {
   switch (movement.move) {
-    case FRONT:
+    case MOVE_FRONT:
       os << "F";
       break;
-    case BACK:
+    case MOVE_BACK:
       os << "B";
       break;
-    case UP:
+    case MOVE_UP:
       os << "U";
       break;
-    case DOWN:
+    case MOVE_DOWN:
       os << "D";
       break;
-    case LEFT:
+    case MOVE_LEFT:
       os << "L";
       break;
-    case RIGHT:
+    case MOVE_RIGHT:
       os << "R";
       break;
   }

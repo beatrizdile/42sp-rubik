@@ -45,22 +45,22 @@ void Cube::rotate(Movement movement) {
   int quantity = movement.type;
   for (int i = 0; i < quantity; i++) {
     switch (movement.move) {
-      case FRONT:
+      case MOVE_FRONT:
         rotate_front();
         break;
-      case BACK:
+      case MOVE_BACK:
         rotate_back();
         break;
-      case UP:
+      case MOVE_UP:
         rotate_up();
         break;
-      case DOWN:
+      case MOVE_DOWN:
         rotate_down();
         break;
-      case LEFT:
+      case MOVE_LEFT:
         rotate_left();
         break;
-      case RIGHT:
+      case MOVE_RIGHT:
         rotate_right();
         break;
     }
@@ -117,30 +117,30 @@ void Cube::rotate_back() {
 
 void Cube::rotate_up() {
   CornerData corner_temp = corners[URF];
-  corners[URF] = corners[UFL];
-  corners[UFL] = corners[ULB];
-  corners[ULB] = corners[UBR];
-  corners[UBR] = corner_temp;
+  corners[URF] = corners[UBR];
+  corners[UBR] = corners[ULB];
+  corners[ULB] = corners[UFL];
+  corners[UFL] = corner_temp;
 
   EdgeData edge_temp = edges[UR];
-  edges[UR] = edges[UF];
-  edges[UF] = edges[UL];
-  edges[UL] = edges[UB];
-  edges[UB] = edge_temp;
+  edges[UR] = edges[UB];
+  edges[UB] = edges[UL];
+  edges[UL] = edges[UF];
+  edges[UF] = edge_temp;
 }
 
 void Cube::rotate_down() {
   CornerData corner_temp = corners[DRB];
-  corners[DRB] = corners[DBL];
-  corners[DBL] = corners[DLF];
-  corners[DLF] = corners[DFR];
-  corners[DFR] = corner_temp;
+  corners[DRB] = corners[DFR];
+  corners[DFR] = corners[DLF];
+  corners[DLF] = corners[DBL];
+  corners[DBL] = corner_temp;
 
   EdgeData edge_temp = edges[DB];
-  edges[DB] = edges[DL];
-  edges[DL] = edges[DF];
-  edges[DF] = edges[DR];
-  edges[DR] = edge_temp;
+  edges[DB] = edges[DR];
+  edges[DR] = edges[DF];
+  edges[DF] = edges[DL];
+  edges[DL] = edge_temp;
 }
 
 void Cube::rotate_left() {
@@ -213,6 +213,7 @@ bool Cube::is_solved() const {
   return true;
 }
 
-void Cube::solve() {
+std::vector<Movement> Cube::solve() {
   std::cout << "Solve method called" << std::endl;
+  return {Movement(MOVE_FRONT, CLOCK_WISE), Movement(MOVE_UP, ANTI_CLOCK_WISE)};
 }

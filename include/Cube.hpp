@@ -17,7 +17,7 @@ class Cube {
   void rotate(Movement movement);
   bool operator==(const Cube& other) const;
   bool is_solved() const;
-  void solve();
+  std::vector<Movement> solve();
 
  private:
   void rotate_front();

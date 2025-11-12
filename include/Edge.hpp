@@ -1,6 +1,9 @@
 #pragma once
 
 #include <iostream>
+#include <map>
+
+#include "Face.hpp"
 
 enum Edge {
   UR = 0,   // Up-Right edge
@@ -29,7 +32,10 @@ struct EdgeData {
   EdgeData(Edge e);
   bool operator==(const EdgeData& other) const;
   friend std::ostream& operator<<(std::ostream& os, const EdgeData& edge);
+  std::map<Face, float[3]> getFaceColors(Edge position) const;
 };
 
+void getFaces(Edge edge, Face faces[2]);
 std::ostream& operator<<(std::ostream& os, Edge edge);
 std::ostream& operator<<(std::ostream& os, EdgeOrientation ori);
+void getEdgePositionCoordinates(Edge edge, float& x, float& y, float& z);

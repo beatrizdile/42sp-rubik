@@ -44,3 +44,108 @@ std::ostream& operator<<(std::ostream& os, const CornerData& corner) {
   os << "{ corner: " << corner.corner << ", ori: " << corner.ori << " }";
   return os;
 }
+
+void getCornerPositionCoordinates(Corner corner, float& x, float& y, float& z) {
+  const float coord = 1.0f;
+  switch (corner) {
+    case URF:
+      x = coord;
+      y = coord;
+      z = coord;
+      break;
+    case UFL:
+      x = -coord;
+      y = coord;
+      z = coord;
+      break;
+    case ULB:
+      x = -coord;
+      y = coord;
+      z = -coord;
+      break;
+    case UBR:
+      x = coord;
+      y = coord;
+      z = -coord;
+      break;
+    case DFR:
+      x = coord;
+      y = -coord;
+      z = coord;
+      break;
+    case DLF:
+      x = -coord;
+      y = -coord;
+      z = coord;
+      break;
+    case DBL:
+      x = -coord;
+      y = -coord;
+      z = -coord;
+      break;
+    case DRB:
+      x = coord;
+      y = -coord;
+      z = -coord;
+      break;
+  }
+}
+
+void getFaces(Corner corner, Face faces[3]) {
+  switch (corner) {
+    case URF:
+      faces[0] = UP;
+      faces[1] = RIGHT;
+      faces[2] = FRONT;
+      break;
+    case UFL:
+      faces[0] = UP;
+      faces[1] = FRONT;
+      faces[2] = LEFT;
+      break;
+    case ULB:
+      faces[0] = UP;
+      faces[1] = LEFT;
+      faces[2] = BACK;
+      break;
+    case UBR:
+      faces[0] = UP;
+      faces[1] = BACK;
+      faces[2] = RIGHT;
+      break;
+    case DFR:
+      faces[0] = DOWN;
+      faces[1] = FRONT;
+      faces[2] = RIGHT;
+      break;
+    case DLF:
+      faces[0] = DOWN;
+      faces[1] = LEFT;
+      faces[2] = FRONT;
+      break;
+    case DBL:
+      faces[0] = DOWN;
+      faces[1] = BACK;
+      faces[2] = LEFT;
+      break;
+    case DRB:
+      faces[0] = DOWN;
+      faces[1] = RIGHT;
+      faces[2] = BACK;
+      break;
+  }
+}
+
+std::map<Face, float[3]> CornerData::getFaceColors(Corner position) const {
+  std::map<Face, float[3]> face_colors;
+  Face faces[3];
+  getFaces(position, faces);
+  int base_index = static_cast<int>(this->corner);
+  for (int i = 0; i < 3; i++) {
+    int rotated_index = (i + 3 - static_cast<int>(ori)) % 3;
+    for (int j = 0; j < 3; j++) {
+      face_colors[faces[i]][j] = corner_base_colors[base_index][rotated_index][j];
+    }
+  }
+  return face_colors;
+}

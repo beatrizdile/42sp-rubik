@@ -11,12 +11,12 @@ enum MoveType {
 };
 
 enum Move {
-  FRONT,
-  BACK,
-  UP,
-  DOWN,
-  LEFT,
-  RIGHT,
+  MOVE_FRONT,
+  MOVE_BACK,
+  MOVE_UP,
+  MOVE_DOWN,
+  MOVE_LEFT,
+  MOVE_RIGHT,
 };
 
 class Movement {
@@ -25,6 +25,7 @@ class Movement {
   MoveType type;
 
   Movement();
+  Movement(Move move);
   Movement(Move move, MoveType type);
   Movement(Movement const& other);
   Movement(std::string movement);

@@ -1,7 +1,7 @@
-NAME 			= rubik
-CC 				= c++
-FLAGS 			= -Wall -Wextra -Werror -std=c++23
-VALGRIND 		= valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes -q
+NAME 				= rubik
+CC 					= c++
+FLAGS 			= -Wall -Wextra -Werror -std=c++23 -O3
+LDFLAGS			= -lGL -lGLU -lglut -lm
 
 SRC_DIR 		= src
 OBJ_DIR 		= obj
@@ -22,7 +22,7 @@ CATCH_HEADER	= $(TEST_DIR)/catch_amalgamated.hpp
 all: $(NAME)
 
 $(NAME): $(OBJ)
-	$(CC) $(FLAGS) $(OBJ) -o $(NAME)
+	$(CC) $(FLAGS) $(OBJ) -o $(NAME) $(LDFLAGS)
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp $(INCLUDE_FILES) | $(OBJ_DIR)
 	$(CC) $(FLAGS) $(INCLUDE_FLAG) -c $< -o $@
@@ -56,7 +56,4 @@ $(TEST_BIN): $(OBJ) $(TEST_OBJ) $(INCLUDE_FILES) $(CATCH_HEADER) | $(TEST_OBJ_DI
 run: $(NAME)
 	./$(NAME) "$(ARGS)"
 
-val: $(NAME)
-	$(VALGRIND) ./$(NAME) "$(ARGS)"
-
-.PHONY: all clean fclean re test run val
+.PHONY: all clean fclean re test run

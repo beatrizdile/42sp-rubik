@@ -1,6 +1,9 @@
 #pragma once
 
 #include <iostream>
+#include <map>
+
+#include "Face.hpp"
 
 enum Corner {
   URF = 0,  // Up-Right-Front corner
@@ -19,9 +22,6 @@ enum CornerOrientation {
   CORNER_ORI_2 = 2,  // 240-degree twist (e.g., URF -> RFU)
 };
 
-std::ostream& operator<<(std::ostream& os, Corner corner);
-std::ostream& operator<<(std::ostream& os, CornerOrientation ori);
-
 struct CornerData {
   Corner corner;
   CornerOrientation ori;
@@ -29,4 +29,10 @@ struct CornerData {
   CornerData(Corner c);
   bool operator==(const CornerData& other) const;
   friend std::ostream& operator<<(std::ostream& os, const CornerData& corner);
+  std::map<Face, float[3]> getFaceColors(Corner position) const;
 };
+
+std::ostream& operator<<(std::ostream& os, Corner corner);
+std::ostream& operator<<(std::ostream& os, CornerOrientation ori);
+void getCornerPositionCoordinates(Corner corner, float& x, float& y, float& z);
+void getFaces(Corner corner, Face faces[3]);
