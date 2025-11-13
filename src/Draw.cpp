@@ -1,5 +1,7 @@
 #include "Draw.hpp"
 
+#include <cmath>
+
 #include "Config.hpp"
 
 void initGL(int argc, char** argv) {
@@ -28,6 +30,72 @@ void reshape(int w, int h) {
   glLoadIdentity();
   gluPerspective(RubikConfig::FOV, aspect, RubikConfig::NEAR_PLANE, RubikConfig::FAR_PLANE);
   glMatrixMode(GL_MODELVIEW);
+}
+
+inline void vertexInPlane(Plane plane, float u, float v, float w) {
+  switch (plane) {
+    case XY:
+      glVertex3f(u, v, w);
+      break;
+    case XZ:
+      glVertex3f(u, w, v);
+      break;
+    case YZ:
+      glVertex3f(w, u, v);
+      break;
+  }
+}
+
+void drawRoundedQuad(Plane plane, float u1, float v1, float w, float u2, float v2, float radius, int segments = 6) {
+  float minU = fmin(u1, u2);
+  float maxU = fmax(u1, u2);
+  float minV = fmin(v1, v2);
+  float maxV = fmax(v1, v2);
+
+  float width = maxU - minU;
+  float height = maxV - minV;
+  float maxRadius = fmin(width, height) * 0.5f;
+  if (radius > maxRadius) radius = maxRadius;
+
+  glBegin(GL_QUADS);
+  vertexInPlane(plane, minU + radius, minV, w);
+  vertexInPlane(plane, maxU - radius, minV, w);
+  vertexInPlane(plane, maxU - radius, maxV, w);
+  vertexInPlane(plane, minU + radius, maxV, w);
+  glEnd();
+
+  glBegin(GL_QUADS);
+  vertexInPlane(plane, minU, minV + radius, w);
+  vertexInPlane(plane, minU + radius, minV + radius, w);
+  vertexInPlane(plane, minU + radius, maxV - radius, w);
+  vertexInPlane(plane, minU, maxV - radius, w);
+  glEnd();
+
+  glBegin(GL_QUADS);
+  vertexInPlane(plane, maxU - radius, minV + radius, w);
+  vertexInPlane(plane, maxU, minV + radius, w);
+  vertexInPlane(plane, maxU, maxV - radius, w);
+  vertexInPlane(plane, maxU - radius, maxV - radius, w);
+  glEnd();
+
+  float angleStep = (M_PI * 0.5f) / segments;
+  CornerDraw corners[4] = {
+      {minU + radius, minV + radius, M_PI},
+      {maxU - radius, minV + radius, M_PI * 1.5f},
+      {maxU - radius, maxV - radius, 0.0f},
+      {minU + radius, maxV - radius, M_PI * 0.5f}};
+
+  for (const auto& corner : corners) {
+    glBegin(GL_TRIANGLE_FAN);
+    vertexInPlane(plane, corner.centerU, corner.centerV, w);
+    for (int i = 0; i <= segments; i++) {
+      float angle = corner.startAngle + i * angleStep;
+      float u = corner.centerU + radius * cos(angle);
+      float v = corner.centerV + radius * sin(angle);
+      vertexInPlane(plane, u, v, w);
+    }
+    glEnd();
+  }
 }
 
 void drawCube(std::map<Face, float[3]> face_colors, float cube_size) {
@@ -67,50 +135,24 @@ void drawCube(std::map<Face, float[3]> face_colors, float cube_size) {
   glEnd();
 
   float small_size = half_size * RubikConfig::FACE_SCALE;
-  glBegin(GL_QUADS);
-  if (face_colors.find(FRONT) != face_colors.end()) {
-    glColor3f(face_colors[FRONT][0], face_colors[FRONT][1], face_colors[FRONT][2]);
-    glVertex3f(-small_size, -small_size, half_size + RubikConfig::FACE_OFFSET);
-    glVertex3f(small_size, -small_size, half_size + RubikConfig::FACE_OFFSET);
-    glVertex3f(small_size, small_size, half_size + RubikConfig::FACE_OFFSET);
-    glVertex3f(-small_size, small_size, half_size + RubikConfig::FACE_OFFSET);
+  float radius = RubikConfig::ROUNDED_CORNER_RADIUS * half_size;
+  float offset = half_size + RubikConfig::FACE_OFFSET;
+  FaceParams faceParams[] = {
+      {FRONT, XY, -small_size, -small_size, offset, small_size, small_size},
+      {BACK, XY, -small_size, -small_size, -offset, small_size, small_size},
+      {UP, XZ, -small_size, -small_size, offset, small_size, small_size},
+      {DOWN, XZ, -small_size, -small_size, -offset, small_size, small_size},
+      {RIGHT, YZ, -small_size, -small_size, offset, small_size, small_size},
+      {LEFT, YZ, -small_size, -small_size, -offset, small_size, small_size}};
+
+  for (const auto& params : faceParams) {
+    auto it = face_colors.find(params.face);
+    if (it != face_colors.end()) {
+      glColor3f(it->second[0], it->second[1], it->second[2]);
+      drawRoundedQuad(params.plane, params.u1, params.v1, params.w,
+                      params.u2, params.v2, radius);
+    }
   }
-  if (face_colors.find(BACK) != face_colors.end()) {
-    glColor3f(face_colors[BACK][0], face_colors[BACK][1], face_colors[BACK][2]);
-    glVertex3f(-small_size, -small_size, -(half_size + RubikConfig::FACE_OFFSET));
-    glVertex3f(-small_size, small_size, -(half_size + RubikConfig::FACE_OFFSET));
-    glVertex3f(small_size, small_size, -(half_size + RubikConfig::FACE_OFFSET));
-    glVertex3f(small_size, -small_size, -(half_size + RubikConfig::FACE_OFFSET));
-  }
-  if (face_colors.find(UP) != face_colors.end()) {
-    glColor3f(face_colors[UP][0], face_colors[UP][1], face_colors[UP][2]);
-    glVertex3f(-small_size, half_size + RubikConfig::FACE_OFFSET, -small_size);
-    glVertex3f(-small_size, half_size + RubikConfig::FACE_OFFSET, small_size);
-    glVertex3f(small_size, half_size + RubikConfig::FACE_OFFSET, small_size);
-    glVertex3f(small_size, half_size + RubikConfig::FACE_OFFSET, -small_size);
-  }
-  if (face_colors.find(DOWN) != face_colors.end()) {
-    glColor3f(face_colors[DOWN][0], face_colors[DOWN][1], face_colors[DOWN][2]);
-    glVertex3f(-small_size, -(half_size + RubikConfig::FACE_OFFSET), -small_size);
-    glVertex3f(small_size, -(half_size + RubikConfig::FACE_OFFSET), -small_size);
-    glVertex3f(small_size, -(half_size + RubikConfig::FACE_OFFSET), small_size);
-    glVertex3f(-small_size, -(half_size + RubikConfig::FACE_OFFSET), small_size);
-  }
-  if (face_colors.find(RIGHT) != face_colors.end()) {
-    glColor3f(face_colors[RIGHT][0], face_colors[RIGHT][1], face_colors[RIGHT][2]);
-    glVertex3f(half_size + RubikConfig::FACE_OFFSET, -small_size, -small_size);
-    glVertex3f(half_size + RubikConfig::FACE_OFFSET, small_size, -small_size);
-    glVertex3f(half_size + RubikConfig::FACE_OFFSET, small_size, small_size);
-    glVertex3f(half_size + RubikConfig::FACE_OFFSET, -small_size, small_size);
-  }
-  if (face_colors.find(LEFT) != face_colors.end()) {
-    glColor3f(face_colors[LEFT][0], face_colors[LEFT][1], face_colors[LEFT][2]);
-    glVertex3f(-(half_size + RubikConfig::FACE_OFFSET), -small_size, -small_size);
-    glVertex3f(-(half_size + RubikConfig::FACE_OFFSET), -small_size, small_size);
-    glVertex3f(-(half_size + RubikConfig::FACE_OFFSET), small_size, small_size);
-    glVertex3f(-(half_size + RubikConfig::FACE_OFFSET), small_size, -small_size);
-  }
-  glEnd();
 }
 
 void drawCorner(Corner position, CornerData corner, float cube_size, Move animMove, float animAngle) {

@@ -40,6 +40,7 @@ constexpr int DELAY_BETWEEN_MOVEMENTS = 750;
 // Drawing
 constexpr float FACE_OFFSET = 0.01f;
 constexpr float FACE_SCALE = 0.85f;
+constexpr float ROUNDED_CORNER_RADIUS = 0.2f;
 
 // Illumination
 constexpr GLfloat LIGHT_AMBIENT[] = {0.5f, 0.5f, 0.5f, 1.0f};

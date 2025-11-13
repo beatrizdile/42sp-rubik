@@ -62,6 +62,18 @@ enum Face {
   BACK = 5,
 };
 
+enum Plane {
+  XY,
+  XZ,
+  YZ
+};
+
+struct FaceParams {
+  Face face;
+  Plane plane;
+  float u1, v1, w, u2, v2;
+};
+
 std::ostream& operator<<(std::ostream& os, Face face);
 void getFaceColor(Face face, float color[3]);
 void getFacePositionCoordinates(Face face, float& x, float& y, float& z);

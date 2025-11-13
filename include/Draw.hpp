@@ -10,6 +10,11 @@
 #include "Edge.hpp"
 #include "Face.hpp"
 
+struct CornerDraw {
+  float centerU, centerV;
+  float startAngle;
+};
+
 void drawCube(std::map<Face, float[3]> face_colors, float cube_size);
 void drawCorner(Corner position, CornerData corner, float cube_size, Move animMove = MOVE_FRONT, float animAngle = 0.0f);
 void drawEdge(Edge position, EdgeData edge, float cube_size, Move animMove = MOVE_FRONT, float animAngle = 0.0f);
