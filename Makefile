@@ -1,6 +1,6 @@
 PROJECT_NAME 	= rubik
 CXX						= c++
-CXXFLAGS			= -Wall -Wextra -Werror -std=c++23
+CXXFLAGS			= -Wall -Wextra -Werror -std=c++20
 OPTFLAGS			= -O3
 DEBUGFLAGS		= -g -DDEBUG
 INCLUDE_FLAGS	= -Iinclude
