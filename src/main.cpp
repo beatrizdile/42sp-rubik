@@ -11,6 +11,7 @@
 #include "Cube.hpp"
 #include "Draw.hpp"
 #include "Edge.hpp"
+#include "Solver.hpp"
 
 CameraState cameraState;
 AnimationState animationState;
@@ -205,6 +206,86 @@ void timer(int value) {
 }
 
 int main(int argc, char** argv) {
+  if (argc == 1) {
+    std::vector<Movement> step_one_movements{
+        Movement(MOVE_FRONT, CLOCK_WISE),
+        Movement(MOVE_FRONT, TWICE),
+        Movement(MOVE_FRONT, ANTI_CLOCK_WISE),
+        Movement(MOVE_BACK, CLOCK_WISE),
+        Movement(MOVE_BACK, TWICE),
+        Movement(MOVE_BACK, ANTI_CLOCK_WISE),
+        Movement(MOVE_UP, CLOCK_WISE),
+        Movement(MOVE_UP, TWICE),
+        Movement(MOVE_UP, ANTI_CLOCK_WISE),
+        Movement(MOVE_DOWN, CLOCK_WISE),
+        Movement(MOVE_DOWN, TWICE),
+        Movement(MOVE_DOWN, ANTI_CLOCK_WISE),
+        Movement(MOVE_LEFT, CLOCK_WISE),
+        Movement(MOVE_LEFT, TWICE),
+        Movement(MOVE_LEFT, ANTI_CLOCK_WISE),
+        Movement(MOVE_RIGHT, CLOCK_WISE),
+        Movement(MOVE_RIGHT, TWICE),
+        Movement(MOVE_RIGHT, ANTI_CLOCK_WISE),
+    };
+
+    std::vector<Movement> step_two_movements{
+        Movement(MOVE_FRONT, TWICE),
+        Movement(MOVE_BACK, TWICE),
+        Movement(MOVE_UP, CLOCK_WISE),
+        Movement(MOVE_UP, TWICE),
+        Movement(MOVE_UP, ANTI_CLOCK_WISE),
+        Movement(MOVE_DOWN, CLOCK_WISE),
+        Movement(MOVE_DOWN, TWICE),
+        Movement(MOVE_DOWN, ANTI_CLOCK_WISE),
+        Movement(MOVE_LEFT, CLOCK_WISE),
+        Movement(MOVE_LEFT, TWICE),
+        Movement(MOVE_LEFT, ANTI_CLOCK_WISE),
+        Movement(MOVE_RIGHT, CLOCK_WISE),
+        Movement(MOVE_RIGHT, TWICE),
+        Movement(MOVE_RIGHT, ANTI_CLOCK_WISE),
+    };
+
+    std::vector<Movement> step_third_movements{
+        Movement(MOVE_FRONT, TWICE),
+        Movement(MOVE_BACK, TWICE),
+        Movement(MOVE_UP, CLOCK_WISE),
+        Movement(MOVE_UP, TWICE),
+        Movement(MOVE_UP, ANTI_CLOCK_WISE),
+        Movement(MOVE_DOWN, CLOCK_WISE),
+        Movement(MOVE_DOWN, TWICE),
+        Movement(MOVE_DOWN, ANTI_CLOCK_WISE),
+        Movement(MOVE_LEFT, TWICE),
+        Movement(MOVE_RIGHT, TWICE),
+    };
+
+    std::vector<Movement> step_fourth_movements{
+        Movement(MOVE_FRONT, TWICE),
+        Movement(MOVE_BACK, TWICE),
+        Movement(MOVE_UP, TWICE),
+        Movement(MOVE_DOWN, TWICE),
+        Movement(MOVE_LEFT, TWICE),
+        Movement(MOVE_RIGHT, TWICE),
+    };
+
+    Solver solver_first;
+    solver_first.bfs(step_one_movements, Cube::FIRST_STEP);
+    solver_first.save_to_file("step_one.bin");
+
+    Solver solver_second;
+    solver_second.bfs(step_two_movements, Cube::SECOND_STEP);
+    solver_second.save_to_file("step_two.bin");
+
+    Solver solver_third;
+    solver_third.bfs(step_third_movements, Cube::THIRD_STEP);
+    solver_third.save_to_file("step_third.bin");
+
+    Solver solver_fourth;
+    solver_fourth.bfs(step_fourth_movements, Cube::FOURTH_STEP);
+    solver_fourth.save_to_file("step_fourth.bin");
+
+    return EXIT_SUCCESS;
+  }
+
   if (argc != 2) {
     std::cerr << "Usage: " << argv[0] << " \"<movements>\"" << std::endl;
     return (EXIT_FAILURE);
@@ -212,10 +293,12 @@ int main(int argc, char** argv) {
 
   std::stringstream ss(argv[1]);
   std::string word;
+  Cube cube;
   while (ss >> word) {
     try {
       Movement movement(word);
       movements.push_back(movement);
+      cube.rotate(movement);
     } catch (const std::exception& e) {
       std::cerr << e.what() << std::endl;
       return (EXIT_FAILURE);
@@ -227,11 +310,45 @@ int main(int argc, char** argv) {
     return (EXIT_FAILURE);
   }
 
+  std::cout << cube << std::endl;
   std::cout << "Calculating solution..." << std::endl;
   auto start = std::chrono::high_resolution_clock::now();
-  for (auto it = movements.rbegin(); it != movements.rend(); ++it) {
-    solution.push_back(it->reverse());
+
+  if (!cube.is_solved()) {
+    Solver solver_one("step_one.bin");
+    solution = solver_one.get_solve(cube.get_id(Cube::FIRST_STEP));
+    for (const auto& move : solution) {
+      cube.rotate(move);
+    }
   }
+
+  if (!cube.is_solved()) {
+    Solver solver_two("step_two.bin");
+    auto step_two = solver_two.get_solve(cube.get_id(Cube::SECOND_STEP));
+    for (const auto& move : step_two) {
+      cube.rotate(move);
+    }
+    solution.insert(solution.end(), step_two.begin(), step_two.end());
+  }
+
+  if (!cube.is_solved()) {
+    Solver solver_third("step_third.bin");
+    auto step_three = solver_third.get_solve(cube.get_id(Cube::THIRD_STEP));
+    for (const auto& move : step_three) {
+      cube.rotate(move);
+    }
+    solution.insert(solution.end(), step_three.begin(), step_three.end());
+  }
+
+  if (!cube.is_solved()) {
+    Solver solver_fourth("step_fourth.bin");
+    auto step_four = solver_fourth.get_solve(cube.get_id(Cube::FOURTH_STEP));
+    for (const auto& move : step_four) {
+      cube.rotate(move);
+    }
+    solution.insert(solution.end(), step_four.begin(), step_four.end());
+  }
+
   auto end = std::chrono::high_resolution_clock::now();
   auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start);
   for (const auto& move : solution) {
@@ -239,6 +356,9 @@ int main(int argc, char** argv) {
   }
   std::cout << std::endl;
   std::cout << "Time spent calculating solution: " << duration.count() << " ns" << std::endl;
+
+  std::cout << cube << std::endl;
+  return (EXIT_SUCCESS);
 
   initGL(argc, argv);
   glutDisplayFunc(display);
