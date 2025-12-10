@@ -39,16 +39,72 @@ Cube::Cube() : corners{{
 Cube::~Cube() {}
 
 std::ostream& operator<<(std::ostream& os, const Cube& cube) {
-  os << "Corners:" << std::endl;
-  for (size_t i = 0; i < cube.corners.size(); i++) {
-    os << "[" << i << "] = " << cube.corners[i] << std::endl;
-  }
-  os << std::endl;
+  os << "+-------------+-----------------+------------+-----------+-----------+" << std::endl;
+  os << "|             | Corner          | Edge                               |" << std::endl;
+  os << "| Number      | 0 1 2 3 4 5 6 7 | 0  1  2  3  4  5  6  7  8  9 10 11 |" << std::endl;
+  os << "+-------------+-----------------+------------+-----------+-----------+" << std::endl;
 
-  os << "Edges:" << std::endl;
-  for (size_t i = 0; i < cube.edges.size(); i++) {
-    os << "[" << i << "] = " << cube.edges[i] << std::endl;
+  os << "| Permutation |";
+  for (size_t i = 0; i < cube.corners.size(); i++) {
+    int value = static_cast<int>(cube.corners[i].corner);
+    os << " ";
+    if (value == static_cast<int>(i)) {
+      os << GREEN << value << RESET;
+    } else {
+      os << value;
+    }
   }
+  os << " |";
+  for (size_t i = 0; i < cube.edges.size(); i++) {
+    int value = static_cast<int>(cube.edges[i].edge);
+    if (value == static_cast<int>(i)) {
+      os << GREEN;
+    } else {
+      int current_group = static_cast<int>(i) / 4;
+      int piece_group = value / 4;
+
+      if (current_group == piece_group) {
+        os << YELLOW;
+      }
+    }
+
+    if (value < 10) {
+      os << " " << value;
+    } else {
+      os << value;
+    }
+
+    if (value == static_cast<int>(i) || (static_cast<int>(i) / 4) == (value / 4)) {
+      os << RESET;
+    }
+    os << " ";
+  }
+  os << "|" << std::endl;
+
+  os << "| Orientation |";
+  for (size_t i = 0; i < cube.corners.size(); i++) {
+    int ori_value = static_cast<int>(cube.corners[i].ori);
+    os << " ";
+    if (ori_value == 0) {
+      os << GREEN << ori_value << RESET;
+    } else {
+      os << ori_value;
+    }
+  }
+  os << " |";
+  for (size_t i = 0; i < cube.edges.size(); i++) {
+    os << " ";
+    int ori_value = static_cast<int>(cube.edges[i].ori);
+    if (ori_value == 0) {
+      os << GREEN << ori_value << RESET;
+    } else {
+      os << ori_value;
+    }
+    os << " ";
+  }
+  os << "|" << std::endl;
+  os << "+-------------+-----------------+------------+-----------+-----------+" << std::endl;
+
   return os;
 }
 
@@ -230,10 +286,13 @@ void Cube::reset() {
 }
 
 void Cube::randomize(int random_moves_count) {
+  std::cout << "Applying random moves: ";
   for (int i = 0; i < random_moves_count; ++i) {
     Movement random_move = randomMovement();
+    std::cout << random_move << " ";
     rotate(random_move);
   }
+  std::cout << std::endl;
 }
 
 std::vector<Movement> Cube::solve() {
@@ -291,35 +350,15 @@ int64_t Cube::get_id(HashType type) {
       }
       break;
     case (THIRD_STEP):
-      for (int i = 0; i < 7; i++) {
-        for (int j = 0; j < 3; j++) {
-          id <<= 1;
-          char t = cornerNames[corners[i].corner][(corners[i].ori + j) % 3];
-          if (!(t == cornerNames[i][j] ||
-                t == faces[(faces.find(cornerNames[i][j]) + 3) % 6])) {
-            id++;
-          }
-        }
+      for (size_t i = 0; i < corners.size() - 1; i++) {
+        id *= 7;
+        id += corners[i].corner;
       }
-      for (int i = 0; i < 11; i++) {
-        for (int j = 0; j < 2; j++) {
-          id <<= 1;
-          char t = edgeNames[edges[i].edge][(edges[i].ori + j) % 2];
-          if (!(t == edgeNames[i][j] ||
-                t == faces[(faces.find(edgeNames[i][j]) + 3) % 6])) {
-            id++;
-          }
-        }
-      }
-      for (int i = 0; i < 8; i++) {
-        id <<= 1;
-        if (corners[i].corner % 4 != i % 4)
+      for (size_t i = 0; i < 8; i++) {
+        id <<= 2;
+        if (edges[i].edge < 4)
           id++;
       }
-      id <<= 1;
-      for (int i = 0; i < 8; i++)
-        for (int j = i + 1; j < 8; j++)
-          id ^= corners[i].corner > corners[j].corner;
       break;
     case (FOURTH_STEP):
       for (int i = 0; i < 8; i++) {

@@ -1,11 +1,16 @@
 #pragma once
 
 #include <array>
+#include <cstdint>
 #include <iostream>
 
 #include "Corner.hpp"
 #include "Edge.hpp"
 #include "Movement.hpp"
+
+#define GREEN "\033[32m"
+#define YELLOW "\033[33m"
+#define RESET "\033[0m"
 
 class Cube {
  public:
@@ -33,6 +38,7 @@ class Cube {
   void reset();
   void randomize(int random_moves_count = 20);
   int64_t get_id(HashType type);
+  uint8_t getEdgePermutationIndex(uint8_t slice) const;
 
  private:
   void rotate_front();
