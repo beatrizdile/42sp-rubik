@@ -71,17 +71,18 @@ void generateDatabase() {
        "G2→G3: Solve E-slice + position corners"},
       {{
            Movement(MOVE_FRONT, TWICE),
-           Movement(MOVE_BACK, TWICE),
-           Movement(MOVE_UP, TWICE),
-           Movement(MOVE_DOWN, TWICE),
-           Movement(MOVE_LEFT, TWICE),
            Movement(MOVE_RIGHT, TWICE),
+           Movement(MOVE_UP, TWICE),
+           Movement(MOVE_BACK, TWICE),
+           Movement(MOVE_LEFT, TWICE),
+           Movement(MOVE_DOWN, TWICE),
        },
        "./database/step_fourth.bin",
        Cube::FOURTH_STEP,
        "G3→G4: Solve completely"}};
 
   std::cout << "Generating Thistlethwaite database..." << std::endl;
+  auto start = std::chrono::high_resolution_clock::now();
   for (const auto& step : steps) {
     std::cout << "Computing " << step.stepName << "..." << std::endl;
     Solver solver;
@@ -89,6 +90,10 @@ void generateDatabase() {
     solver.save_to_file(step.filename);
     std::cout << "Saved to " << step.filename << std::endl;
   }
+  auto end = std::chrono::high_resolution_clock::now();
+  auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start);
+  std::cout << "Time spent calculating database: "
+            << duration.count() / 1e9 << "s" << std::endl;
   std::cout << "Database generation complete!" << std::endl;
 }
 
@@ -103,36 +108,40 @@ void solveCube(Cube& cube, bool showSteps = false) {
       {"./database/step_one.bin", Cube::FIRST_STEP, "G0→G1: Orient all edges"},
       {"./database/step_two.bin", Cube::SECOND_STEP, "G1→G2: Orient corners + position E-slice edges"},
       {"./database/step_third.bin", Cube::THIRD_STEP, "G2→G3: Solve E-slice + position corners"},
-      {"./database/step_fourth.bin", Cube::FOURTH_STEP, "G3→G4: Solve completely"}};
+      {"./database/step_fourth.bin", Cube::FOURTH_STEP, "G3→G4: Solve completely"},
+      {"./database/step_fourth.bin", Cube::FOURTH_STEP, "Final"}};
 
   for (const auto& step : steps) {
-    if (!cube.is_solved()) {
-      if (showSteps) {
-        std::cout << "\nStep: " << step.stepName << std::endl;
-      }
+    if (cube.is_solved()) return;
 
-      Solver solver(step.filename);
-      auto stepSolution = solver.get_solve(cube.get_id(step.hashType));
-
-      if (showSteps) {
-        std::cout << "Moves in this step: ";
-        for (const auto& move : stepSolution) {
-          std::cout << move << " ";
-        }
-        std::cout << "(" << stepSolution.size() << " moves)" << std::endl;
-      }
-
-      for (const auto& move : stepSolution) {
-        cube.rotate(move);
-      }
-
-      if (showSteps) {
-        std::cout << "Cube state after this step:" << std::endl;
-        std::cout << cube << std::endl;
-      }
-      solution.insert(solution.end(), stepSolution.begin(), stepSolution.end());
+    if (showSteps) {
+      std::cout << "\nStep: " << step.stepName << std::endl;
     }
+
+    int64_t id = cube.get_id(step.hashType);
+    auto stepSolution = Solver::get_solve(step.filename, id);
+    std::cout << "ID: " << id << std::endl;
+
+    if (showSteps) {
+      std::cout << "Moves in this step: ";
+      for (const auto& move : stepSolution) {
+        std::cout << move << " ";
+      }
+      std::cout << "(" << stepSolution.size() << " moves)" << std::endl;
+    }
+
+    for (const auto& move : stepSolution) {
+      cube.rotate(move);
+    }
+
+    if (showSteps) {
+      std::cout << "Cube state after this step:" << std::endl;
+      std::cout << cube << std::endl;
+    }
+    solution.insert(solution.end(), stepSolution.begin(), stepSolution.end());
   }
+
+  solution = optimizeMovements(solution);
 }
 
 void printUsage(const char* programName) {
@@ -151,6 +160,15 @@ void printUsage(const char* programName) {
   std::cout << "  " << programName << " -d \"F R U R'\"        # Show graphical interface" << std::endl;
 }
 
+void graphic(int argc, char** argv) {
+  initGL(argc, argv);
+  glutDisplayFunc(display);
+  glutKeyboardFunc(keyboard);
+  glutSpecialFunc(specialKeys);
+  glutTimerFunc(RubikConfig::FRAME_TIME, timer, 0);
+  glutMainLoop();
+}
+
 int main(int argc, char** argv) {
   bool showDisplay = false;
   bool useRandom = false;
@@ -162,6 +180,12 @@ int main(int argc, char** argv) {
     if (strcmp(argv[i], "-d") == 0) {
       showDisplay = true;
     } else if (strcmp(argv[i], "-r") == 0) {
+      if (!movements_str.empty()) {
+        std::cerr << "Cannot use random cube and provide movements simultaneously." << std::endl;
+        printUsage(argv[0]);
+        return EXIT_FAILURE;
+      }
+
       useRandom = true;
     } else if (strcmp(argv[i], "-c") == 0) {
       calculateDatabase = true;
@@ -171,6 +195,18 @@ int main(int argc, char** argv) {
       printUsage(argv[0]);
       return EXIT_SUCCESS;
     } else if (argv[i][0] != '-') {
+      if (!movements_str.empty()) {
+        std::cerr << "Multiple movement strings provided." << std::endl;
+        printUsage(argv[0]);
+        return EXIT_FAILURE;
+      }
+
+      if (useRandom) {
+        std::cerr << "Cannot use random cube and provide movements simultaneously." << std::endl;
+        printUsage(argv[0]);
+        return EXIT_FAILURE;
+      }
+
       movements_str = argv[i];
     } else {
       std::cerr << "Unknown option: " << argv[i] << std::endl;
@@ -221,12 +257,7 @@ int main(int argc, char** argv) {
   if (cube.is_solved()) {
     std::cout << "Cube is already solved!" << std::endl;
     if (showDisplay) {
-      initGL(argc, argv);
-      glutDisplayFunc(display);
-      glutKeyboardFunc(keyboard);
-      glutSpecialFunc(specialKeys);
-      glutTimerFunc(RubikConfig::FRAME_TIME, timer, 0);
-      glutMainLoop();
+      graphic(argc, argv);
     }
     return EXIT_SUCCESS;
   }
@@ -251,15 +282,11 @@ int main(int argc, char** argv) {
     std::cout << "Cube is solved!" << std::endl;
   } else {
     std::cout << "Cube is not solved." << std::endl;
+    return EXIT_FAILURE;
   }
 
   if (showDisplay) {
-    initGL(argc, argv);
-    glutDisplayFunc(display);
-    glutKeyboardFunc(keyboard);
-    glutSpecialFunc(specialKeys);
-    glutTimerFunc(RubikConfig::FRAME_TIME, timer, 0);
-    glutMainLoop();
+    graphic(argc, argv);
   }
 
   return EXIT_SUCCESS;

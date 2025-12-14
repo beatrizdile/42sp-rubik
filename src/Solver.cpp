@@ -3,24 +3,6 @@
 #include <cstring>
 #include <fstream>
 
-Solver::Solver(std::string filename) {
-  std::ifstream in(filename, std::ios::binary);
-
-  size_t database_size;
-  in.read((char*)&database_size, sizeof(database_size));
-
-  for (size_t i = 0; i < database_size; ++i) {
-    int64_t id;
-    Data data;
-    in.read((char*)&id, sizeof(id));
-    in.read((char*)&data.length, sizeof(data.length));
-    in.read((char*)data.moves, data.length);
-    database[id] = data;
-  }
-
-  in.close();
-};
-
 void Solver::save_to_file(std::string filename) const {
   std::ofstream out(filename, std::ios::binary);
 
@@ -36,12 +18,26 @@ void Solver::save_to_file(std::string filename) const {
   out.close();
 };
 
-std::vector<Movement> Solver::get_solve(int64_t id) {
-  auto it = database.find(id);
-  if (it != database.end()) {
-    return decodeMoves(it->second.moves, it->second.length);
+std::vector<Movement> Solver::get_solve(std::string filename, int64_t id) {
+  std::ifstream in(filename, std::ios::binary);
+
+  size_t database_size;
+  in.read((char*)&database_size, sizeof(database_size));
+
+  for (size_t i = 0; i < database_size; ++i) {
+    int64_t current_id;
+    Data data;
+    in.read((char*)&current_id, sizeof(current_id));
+    in.read((char*)&data.length, sizeof(data.length));
+    in.read((char*)data.moves, data.length);
+
+    if (current_id == id) {
+      in.close();
+      return decodeMoves(data.moves, data.length);
+    }
   }
 
+  in.close();
   return std::vector<Movement>();
 }
 
@@ -81,19 +77,25 @@ void Solver::bfs(std::vector<Movement> valid_moves, Cube::HashType hash_type) {
     Cube cube = cubes.front();
     cubes.pop();
     for (Movement move : valid_moves) {
+      if (!cube.movement_set.empty()) {
+        Movement last_move = cube.movement_set.back();
+        if (move == last_move) continue;
+      }
+
       Cube current(cube);
       current.rotate(move);
       int64_t id = current.get_id(hash_type);
-      if (database.find(id) == database.end()) {
-        auto solution_moves = getSolutionMoves(current);
-        auto encoded_moves = encodeMoves(solution_moves);
-        Data data{};
-        data.length = static_cast<uint8_t>(encoded_moves.size());
-        std::memcpy(data.moves, encoded_moves.data(), encoded_moves.size());
-        database[id] = data;
-        cubes.push(current);
-      }
+      if (database.find(id) != database.end()) continue;
+
+      auto solution_moves = getSolutionMoves(current);
+      auto encoded_moves = encodeMoves(solution_moves);
+      Data data{};
+      data.length = static_cast<uint8_t>(encoded_moves.size());
+      std::memcpy(data.moves, encoded_moves.data(), encoded_moves.size());
+      database[id] = data;
+      cubes.push(current);
     }
   }
-  std::cout << "Database size: " << database.size() << std::endl;
+
+  std::cout << "Final database size: " << database.size() << std::endl;
 };

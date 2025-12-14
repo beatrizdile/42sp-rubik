@@ -295,9 +295,52 @@ void Cube::randomize(int random_moves_count) {
   std::cout << std::endl;
 }
 
-std::vector<Movement> Cube::solve() {
-  std::cout << "Solve method called" << std::endl;
-  return {Movement(MOVE_FRONT, CLOCK_WISE), Movement(MOVE_UP, ANTI_CLOCK_WISE)};
+int64_t Cube::get_first_step_id() const {
+  int64_t id = 0;
+
+  for (size_t i = 0; i < edges.size() - 1; i++) {
+    id <<= 1;
+    id |= edges[i].ori;
+  }
+
+  return id;
+}
+
+int64_t Cube::get_second_step_id() const {
+  int64_t id = 0;
+
+  for (size_t i = 0; i < corners.size() - 1; i++) {
+    int ori = corners[i].ori;
+    id *= 3;
+    id += ori;
+  }
+
+  for (size_t i = 0; i < edges.size(); i++) {
+    id <<= 1;
+    if (edges[i].edge < 8) {
+      id |= 1;
+    }
+  }
+
+  return id;
+}
+
+int64_t Cube::get_third_step_id() const {
+  int64_t id = 0;
+
+  for (size_t i = 0; i < corners.size(); i++) {
+    id <<= 3;
+    id += corners[i].corner;
+  }
+
+  for (size_t i = 0; i < edges.size(); i++) {
+    id <<= 1;
+    if (size_t(edges[i].edge % 2) == i % 2) {
+      id |= 1;
+    }
+  }
+
+  return id;
 }
 
 std::string faces = "FRUBLD";
@@ -326,59 +369,47 @@ std::string edgeNames[12] = {
     "BR",
 };
 
+int64_t Cube::get_fourth_step_id() const {
+  int64_t id = 0;
+
+  for (size_t i = 0; i < corners.size(); i++) {
+    for (size_t j = 0; j < 3; j++) {
+      id <<= 1;
+      char t = cornerNames[corners[i].corner][(corners[i].ori + j) % 3];
+      if (t == faces[(faces.find(cornerNames[i][j]) + 3) % 6]) {
+        id++;
+      }
+    }
+  }
+
+  for (size_t i = 0; i < edges.size(); i++) {
+    for (size_t j = 0; j < 2; j++) {
+      id <<= 1;
+      char t = edgeNames[edges[i].edge][(edges[i].ori + j) % 2];
+      if (t == faces[(faces.find(edgeNames[i][j]) + 3) % 6]) {
+        id++;
+      }
+    }
+  }
+
+  return id;
+}
+
 int64_t Cube::get_id(HashType type) {
-  size_t id = 0;
+  int64_t id = 0;
 
   switch (type) {
     case (FIRST_STEP):
-      for (size_t i = 0; i < edges.size() - 1; i++) {
-        int ori = edges[i].ori;
-        id <<= 1;
-        id += ori;
-      }
+      id = get_first_step_id();
       break;
     case (SECOND_STEP):
-      for (size_t i = 0; i < corners.size() - 1; i++) {
-        int ori = corners[i].ori;
-        id <<= 2;
-        id += ori;
-      }
-      for (size_t i = 0; i < edges.size(); i++) {
-        id <<= 2;
-        if (edges[i].edge < 8)
-          id++;
-      }
+      id = get_second_step_id();
       break;
     case (THIRD_STEP):
-      for (size_t i = 0; i < corners.size() - 1; i++) {
-        id *= 7;
-        id += corners[i].corner;
-      }
-      for (size_t i = 0; i < 8; i++) {
-        id <<= 2;
-        if (edges[i].edge < 4)
-          id++;
-      }
+      id = get_third_step_id();
       break;
     case (FOURTH_STEP):
-      for (int i = 0; i < 8; i++) {
-        for (int j = 0; j < 3; j++) {
-          id <<= 1;
-          char t = cornerNames[corners[i].corner][(corners[i].ori + j) % 3];
-          if (t == faces[(faces.find(cornerNames[i][j]) + 3) % 6]) {
-            id++;
-          }
-        }
-      }
-      for (int i = 0; i < 12; i++) {
-        for (int j = 0; j < 2; j++) {
-          id <<= 1;
-          char t = edgeNames[edges[i].edge][(edges[i].ori + j) % 2];
-          if (t == faces[(faces.find(edgeNames[i][j]) + 3) % 6]) {
-            id++;
-          }
-        }
-      }
+      id = get_fourth_step_id();
       break;
   }
 

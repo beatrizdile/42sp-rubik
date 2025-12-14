@@ -34,11 +34,9 @@ class Cube {
   void rotate(Movement movement);
   bool operator==(const Cube& other) const;
   bool is_solved() const;
-  std::vector<Movement> solve();
   void reset();
   void randomize(int random_moves_count = 20);
   int64_t get_id(HashType type);
-  uint8_t getEdgePermutationIndex(uint8_t slice) const;
 
  private:
   void rotate_front();
@@ -47,4 +45,9 @@ class Cube {
   void rotate_down();
   void rotate_left();
   void rotate_right();
+
+  int64_t get_first_step_id() const;
+  int64_t get_second_step_id() const;
+  int64_t get_third_step_id() const;
+  int64_t get_fourth_step_id() const;
 };

@@ -55,6 +55,10 @@ Movement::Movement(std::string movement) {
   }
 }
 
+bool Movement::operator==(const Movement& other) const {
+  return move == other.move && type == other.type;
+}
+
 Movement& Movement::operator=(Movement const& other) {
   if (this != &other) {
     move = other.move;
@@ -203,4 +207,33 @@ Movement randomMovement() {
   MoveType randomType = types[rand() % 3];
 
   return Movement(randomMove, randomType);
+}
+
+std::vector<Movement> optimizeMovements(const std::vector<Movement>& movements) {
+  std::vector<Movement> optimized;
+
+  for (const auto& move : movements) {
+    if (optimized.empty()) continue;
+
+    Movement lastMove = optimized.back();
+    if (lastMove.move == move.move) {
+      int totalType = static_cast<int>(lastMove.type) + static_cast<int>(move.type);
+      totalType = (totalType - 1) % 3 + 1;
+
+      optimized.back().type = static_cast<MoveType>(totalType);
+      if (optimized.back().type == TWICE && lastMove.type == TWICE) {
+        optimized.pop_back();
+      } else if (optimized.back().type == CLOCK_WISE && lastMove.type == ANTI_CLOCK_WISE) {
+        optimized.pop_back();
+      } else if (optimized.back().type == ANTI_CLOCK_WISE && lastMove.type == CLOCK_WISE) {
+        optimized.pop_back();
+      }
+
+      continue;
+    }
+
+    optimized.push_back(move);
+  }
+
+  return optimized;
 }

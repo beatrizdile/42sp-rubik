@@ -36,6 +36,7 @@ class Movement {
 
   Movement& operator=(Movement const& other);
   friend std::ostream& operator<<(std::ostream& os, const Movement& movement);
+  bool operator==(const Movement& other) const;
   Movement reverse() const;
 };
 
@@ -45,3 +46,4 @@ bool isPieceOnMove(Move move, Corner corner);
 bool isPieceOnMove(Move move, Edge edge);
 bool isPieceOnMove(Move move, Face face);
 Movement randomMovement();
+std::vector<Movement> optimizeMovements(const std::vector<Movement>& movements);
