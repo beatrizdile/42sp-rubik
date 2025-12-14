@@ -17,8 +17,8 @@ constexpr float CUBE_ROTATION_SPEED = 2.0f;
 // Camera
 constexpr float CAMERA_DISTANCE = 8.0f;
 constexpr float CAMERA_ROTATION_SPEED = 5.0f;
-constexpr float CAMERA_MIN_ELEVATION = -95.0f;
-constexpr float CAMERA_MAX_ELEVATION = 95.0f;
+constexpr float CAMERA_MIN_ELEVATION = -85.0f;
+constexpr float CAMERA_MAX_ELEVATION = 85.0f;
 
 // Projection
 constexpr float FOV = 45.0f;
@@ -31,11 +31,11 @@ constexpr int FRAME_TIME = 1000 / FPS;
 
 // Animation
 constexpr float ANIMATION_SPEED = 90.0f;
-constexpr float ANIMATION_DURATION_MS = 500.0f;
+constexpr float ANIMATION_DURATION_MS = 350.0f;
 constexpr int ANIMATION_STEPS = static_cast<int>(ANIMATION_DURATION_MS / FRAME_TIME);
 
 // Auto Movement
-constexpr int DELAY_BETWEEN_MOVEMENTS = 750;
+constexpr int DELAY_BETWEEN_MOVEMENTS = 500;
 
 // Drawing
 constexpr float FACE_OFFSET = 0.01f;

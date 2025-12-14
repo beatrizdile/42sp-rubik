@@ -110,17 +110,17 @@ void solveCube(Cube& cube, bool showSteps = false) {
       {"./database/step_third.bin", Cube::THIRD_STEP, "G2→G3: Solve E-slice + position corners"},
       {"./database/step_fourth.bin", Cube::FOURTH_STEP, "G3→G4: Solve completely"},
       {"./database/step_fourth.bin", Cube::FOURTH_STEP, "Final"}};
+  Cube current = cube;
 
   for (const auto& step : steps) {
-    if (cube.is_solved()) return;
+    if (current.is_solved()) break;
 
     if (showSteps) {
       std::cout << "\nStep: " << step.stepName << std::endl;
     }
 
-    int64_t id = cube.get_id(step.hashType);
+    int64_t id = current.get_id(step.hashType);
     auto stepSolution = Solver::get_solve(step.filename, id);
-    std::cout << "ID: " << id << std::endl;
 
     if (showSteps) {
       std::cout << "Moves in this step: ";
@@ -131,17 +131,20 @@ void solveCube(Cube& cube, bool showSteps = false) {
     }
 
     for (const auto& move : stepSolution) {
-      cube.rotate(move);
+      current.rotate(move);
     }
 
     if (showSteps) {
       std::cout << "Cube state after this step:" << std::endl;
-      std::cout << cube << std::endl;
+      std::cout << current << std::endl;
     }
     solution.insert(solution.end(), stepSolution.begin(), stepSolution.end());
   }
 
   solution = optimizeMovements(solution);
+  for (auto& move : solution) {
+    cube.rotate(move);
+  }
 }
 
 void printUsage(const char* programName) {
@@ -160,8 +163,9 @@ void printUsage(const char* programName) {
   std::cout << "  " << programName << " -d \"F R U R'\"        # Show graphical interface" << std::endl;
 }
 
-void graphic(int argc, char** argv) {
+void graphic(int argc, char** argv, Cube cube) {
   initGL(argc, argv);
+  setCube(cube);
   glutDisplayFunc(display);
   glutKeyboardFunc(keyboard);
   glutSpecialFunc(specialKeys);
@@ -185,7 +189,6 @@ int main(int argc, char** argv) {
         printUsage(argv[0]);
         return EXIT_FAILURE;
       }
-
       useRandom = true;
     } else if (strcmp(argv[i], "-c") == 0) {
       calculateDatabase = true;
@@ -231,33 +234,28 @@ int main(int argc, char** argv) {
     while (ss >> word) {
       try {
         Movement movement(word);
-        movements.push_back(movement);
         cube.rotate(movement);
       } catch (const std::exception& e) {
         std::cerr << e.what() << std::endl;
         return EXIT_FAILURE;
       }
     }
-
-    if (movements.empty()) {
-      std::cerr << "No valid movements provided." << std::endl;
-      return EXIT_FAILURE;
-    }
-  } else {
+  } else if (!showDisplay) {
     std::cout << "No cube state specified. Use -r for random cube or provide movement string." << std::endl;
     printUsage(argv[0]);
     return EXIT_FAILURE;
   }
 
+  Cube scrambledCube = cube;
   if (showSteps) {
     std::cout << "Initial cube state:" << std::endl
               << cube << std::endl;
   }
 
-  if (cube.is_solved()) {
+  if (cube.is_solved() && !movements_str.empty()) {
     std::cout << "Cube is already solved!" << std::endl;
     if (showDisplay) {
-      graphic(argc, argv);
+      graphic(argc, argv, cube);
     }
     return EXIT_SUCCESS;
   }
@@ -286,7 +284,7 @@ int main(int argc, char** argv) {
   }
 
   if (showDisplay) {
-    graphic(argc, argv);
+    graphic(argc, argv, scrambledCube);
   }
 
   return EXIT_SUCCESS;

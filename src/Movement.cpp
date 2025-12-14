@@ -211,29 +211,30 @@ Movement randomMovement() {
 
 std::vector<Movement> optimizeMovements(const std::vector<Movement>& movements) {
   std::vector<Movement> optimized;
+  optimized.reserve(movements.size());
+  optimized.push_back(movements[0]);
 
-  for (const auto& move : movements) {
-    if (optimized.empty()) continue;
-
+  for (size_t i = 1; i < movements.size(); i++) {
+    Movement move = movements[i];
     Movement lastMove = optimized.back();
+
     if (lastMove.move == move.move) {
       int totalType = static_cast<int>(lastMove.type) + static_cast<int>(move.type);
-      totalType = (totalType - 1) % 3 + 1;
+      totalType = totalType % 4;
 
-      optimized.back().type = static_cast<MoveType>(totalType);
-      if (optimized.back().type == TWICE && lastMove.type == TWICE) {
+      if (totalType == 0) {
         optimized.pop_back();
-      } else if (optimized.back().type == CLOCK_WISE && lastMove.type == ANTI_CLOCK_WISE) {
-        optimized.pop_back();
-      } else if (optimized.back().type == ANTI_CLOCK_WISE && lastMove.type == CLOCK_WISE) {
-        optimized.pop_back();
+      } else {
+        optimized.back().type = static_cast<MoveType>(totalType);
       }
-
-      continue;
+    } else {
+      optimized.push_back(move);
     }
-
-    optimized.push_back(move);
   }
+
+  std::cout << "Optimized from " << movements.size() << " to " << optimized.size()
+            << " movements (" << (movements.size() - optimized.size())
+            << " movements saved)" << std::endl;
 
   return optimized;
 }

@@ -4,7 +4,6 @@
 CameraState cameraState;
 AnimationState animationState;
 Cube cube;
-std::vector<Movement> movements;
 std::vector<Movement> solution;
 
 void updateCamera() noexcept {
@@ -57,7 +56,7 @@ void keyboard(unsigned char key, int x, int y) {
 
   switch (key) {
     case 's':
-      if (!animationState.isAnimating && movements.empty() && solution.empty()) {
+      if (!animationState.isAnimating && solution.empty()) {
         srand(time(nullptr));
         cube.randomize(20);
       }
@@ -160,6 +159,10 @@ void specialKeys(int key, int x, int y) {
   glutPostRedisplay();
 }
 
+void setCube(Cube const& newCube) {
+  cube = newCube;
+}
+
 void timer(int value) {
   (void)value;
 
@@ -175,12 +178,7 @@ void timer(int value) {
     auto timeSinceLastMove = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - lastMoveTime).count();
 
     if (timeSinceLastMove >= RubikConfig::DELAY_BETWEEN_MOVEMENTS) {
-      if (!movements.empty()) {
-        Movement nextMove = movements.front();
-        movements.erase(movements.begin());
-        animationState.startAnimation(nextMove.move, nextMove.type);
-        lastMoveTime = currentTime;
-      } else if (!solution.empty()) {
+      if (!solution.empty()) {
         Movement nextMove = solution.front();
         solution.erase(solution.begin());
         animationState.startAnimation(nextMove.move, nextMove.type);
