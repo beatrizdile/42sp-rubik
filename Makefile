@@ -22,7 +22,7 @@ TEST_BIN 		= run_tests
 CATCH_HEADER	= $(TEST_DIR)/catch_amalgamated.hpp
 TEST_SAFE_OBJ	= $(filter-out $(OBJ_DIR)/main.o $(OBJ_DIR)/Draw.o, $(OBJ))
 
-.PHONY: all clean fclean re test run debug
+.PHONY: all clean fclean re test run debug setup
 
 all: $(PROJECT_NAME)
 
@@ -51,6 +51,12 @@ $(CATCH_HEADER):
 
 run: $(PROJECT_NAME)
 	@./$(PROJECT_NAME) "$(ARGS)"
+
+setup:
+	@echo "Configurando o Git LFS..."
+	@git lfs install
+	@git lfs track "database/*"
+	@echo "Configuração do Git LFS concluída. Adicione e faça o commit do arquivo .gitattributes."
 
 $(OBJ_DIR):
 	@mkdir -p $(OBJ_DIR)
